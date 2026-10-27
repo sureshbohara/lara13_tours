@@ -1,0 +1,4 @@
+OPEN CMD 
+
+set "PATH=%USERPROFILE%\.config\herd-lite\bin;%PATH%"
+php -v
