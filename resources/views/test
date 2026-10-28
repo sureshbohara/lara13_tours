@@ -2,3 +2,70 @@ OPEN CMD
 
 set "PATH=%USERPROFILE%\.config\herd-lite\bin;%PATH%"
 php -v
+
+
+
+# 1. Laravel Breeze install गर्नुहोस् (Inertia + React को लागि)
+composer require laravel/breeze --dev
+php artisan breeze:install react
+
+# 2. Node.js dependencies install गर्नुहोस्
+npm install
+
+# 3. Additional packages (Travel website को लागि)
+npm install @inertiajs/react react react-dom
+npm install @heroicons/react lucide-react
+npm install swiper axios
+
+
+
+
+resources/js/
+├── Pages/
+│   │   ├Home.jsx
+│   │   ├AboutUs.jsx
+│   │   ├ContactUs.jsx
+│   │   ├Gallery.jsx
+│   │   ├Faqs.jsx
+│   │   ├Team.jsx
+│   │   └CmsPage.jsx
+
+├── Components/
+│   ├── Shared/
+│   │   ├── Header.jsx
+│   │   ├── Footer.jsx
+│   │   ├── MobileBottomNav.jsx
+│   │   └── Breadcrumb.jsx
+│   │
+│   ├── HomeSections/
+│   │   ├── BannerSlider.jsx
+│   │   ├── ToursCategory.jsx
+│   │   ├── PopularTours.jsx
+│   │   ├── UpcomingPackages.jsx
+│   │   ├── InfoSection.jsx
+│   │   ├── ServiceSection.jsx
+│   │   └── ReviewSection.jsx
+│   │
+│   └── UI/
+│       ├── PackageCard.jsx
+│       ├── CategoryCard.jsx
+│       ├── TeamCard.jsx
+│       └── GalleryItem.jsx
+│
+├── Layouts/
+│   ├── FrontLayout.jsx
+│   └── GuestLayout.jsx
+│
+├── Hooks/
+│   └── useCurrency.js
+│
+├── Context/
+│   └── CurrencyContext.jsx
+│
+├── Utils/
+│   ├── helpers.js
+│   ├── constants.js
+│   └── validators.js
+│
+── app.jsx
+└── bootstrap.js

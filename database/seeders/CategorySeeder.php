@@ -1,189 +1,189 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Database\Seeders;
 
 use App\Models\Admin;
 use App\Models\Category;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-    
         $adminId = Admin::first()?->id;
 
-        // 1. Create Parent Categories
-        $adventure = Category::create([
-            'name'             => 'Adventure Tours',
-            'slug'             => 'adventure-tours',
-            'excerpt'          => 'Thrilling outdoor activities and expeditions across Nepal.',
-            'description'      => 'Explore the ultimate adventure with our curated trekking, rafting, and mountain biking packages.',
-            'image'            => null,
-            'font_icon'        => 'bi bi-signpost-split',
-            'order_level'      => 1,
-            'display_on'       => 'home',
-            'meta_keywords'    => 'adventure, trekking, rafting, nepal tours',
-            'meta_description' => 'Book the best adventure tours and trekking packages in Nepal.',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | A. Trekking
+        |--------------------------------------------------------------------------
+        */
+        $trekking = $this->createCategory([
+            'name' => 'Trekking',
+            'slug' => 'trekking',
+            'excerpt' => 'Explore the best trekking regions of Nepal and Tibet.',
+            'description' => 'Discover Himalayan trekking adventures, remote trails, and spectacular mountain landscapes.',
+            'font_icon' => 'bi bi-signpost-split',
+            'order_level' => 1,
+            'display_on' => 'home',
+        ], $adminId);
 
-        $accommodation = Category::create([
-            'name'             => 'Accommodation',
-            'slug'             => 'accommodation',
-            'excerpt'          => 'Comfortable and authentic places to stay during your journey.',
-            'description'      => 'From luxury hotels to traditional homestays, find the perfect place to rest and rejuvenate.',
-            'image'            => null,
-            'font_icon'        => 'bi bi-house-door',
-            'order_level'      => 2,
-            'display_on'       => 'home',
-            'meta_keywords'    => 'hotels, homestays, resorts, nepal accommodation',
-            'meta_description' => 'Find the best hotels, resorts, and authentic homestays in Nepal.',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        $trekkingRegions = [
+            'Everest Region',
+            'Annapurna Region',
+            'Langtang Region',
+            'Manaslu Region',
+            'Kanchenjunga Region',
+            'Dolpa Region',
+            'Nepal Eastern Region',
+            'Nepal Western Region',
+            'Great Himalayan',
+            'Tibet Tour Trek',
+        ];
 
-        $culture = Category::create([
-            'name'             => 'Cultural Experiences',
-            'slug'             => 'cultural-experiences',
-            'excerpt'          => 'Immerse yourself in the rich heritage and traditions of Nepal.',
-            'description'      => 'Discover ancient temples, participate in local festivals, and experience authentic Nepali culture.',
-            'image'            => null,
-            'font_icon'        => 'bi bi-people',
-            'order_level'      => 3,
-            'display_on'       => 'default',
-            'meta_keywords'    => 'culture, heritage, festivals, nepal traditions',
-            'meta_description' => 'Experience the rich cultural heritage and traditions of Nepal.',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        $this->createChildren($trekking, $trekkingRegions, $adminId);
 
-        $wellness = Category::create([
-            'name'             => 'Health & Wellness',
-            'slug'             => 'health-wellness',
-            'excerpt'          => 'Rejuvenate your mind and body with our wellness retreats.',
-            'description'      => 'Find peace and tranquility with yoga retreats, meditation sessions, and Ayurvedic treatments.',
-            'image'            => null,
-            'font_icon'        => 'bi bi-heart-pulse',
-            'order_level'      => 4,
-            'display_on'       => 'page',
-            'meta_keywords'    => 'yoga, meditation, wellness, retreat, nepal',
-            'meta_description' => 'Rejuvenate your mind and body with health and wellness retreats in Nepal.',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | B. Climbing
+        |--------------------------------------------------------------------------
+        */
+        $climbing = $this->createCategory([
+            'name' => 'Climbing',
+            'slug' => 'climbing',
+            'excerpt' => 'Experience Himalayan peak climbing and mountaineering.',
+            'description' => 'Explore trekking peaks, technical climbing, and high-altitude Himalayan expeditions.',
+            'font_icon' => 'bi bi-mountain',
+            'order_level' => 2,
+            'display_on' => 'home',
+        ], $adminId);
 
-        // 2. Create Child Categories (Sub-categories)
-        
-        // Children of Adventure Tours
-        Category::create([
-            'parent_id'        => $adventure->id,
-            'name'             => 'Trekking',
-            'slug'             => 'trekking',
-            'excerpt'          => 'World-class trekking routes in the Himalayas.',
-            'description'      => 'From Everest Base Camp to the Annapurna Circuit, experience the best trekking routes.',
-            'font_icon'        => 'bi bi-map',
-            'order_level'      => 1,
-            'display_on'       => 'default',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        $climbingTypes = [
+            '6000m Trekking Peaks',
+            '6500m–7000m Technical Peaks',
+            '8000m Expeditions',
+            'Climbing & Trekking Tours',
+        ];
 
-        Category::create([
-            'parent_id'        => $adventure->id,
-            'name'             => 'White Water Rafting',
-            'slug'             => 'white-water-rafting',
-            'excerpt'          => 'Adrenaline-pumping rafting experiences on Nepal\'s rivers.',
-            'description'      => 'Navigate the thrilling rapids of the Trishuli, Bhote Koshi, and Sun Koshi rivers.',
-            'font_icon'        => 'bi bi-droplet',
-            'order_level'      => 2,
-            'display_on'       => 'default',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        $this->createChildren($climbing, $climbingTypes, $adminId);
 
-        // Children of Accommodation
-        Category::create([
-            'parent_id'        => $accommodation->id,
-            'name'             => 'Traditional Homestays',
-            'slug'             => 'traditional-homestays',
-            'excerpt'          => 'Live like a local in authentic Nepali homes.',
-            'description'      => 'Experience genuine Nepali hospitality, traditional food, and rural lifestyle.',
-            'font_icon'        => 'bi bi-house-heart',
-            'order_level'      => 1,
-            'display_on'       => 'home',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | C. Tours & Activities
+        |--------------------------------------------------------------------------
+        */
+        $tours = $this->createCategory([
+            'name' => 'Tours & Activities',
+            'slug' => 'tours-activities',
+            'excerpt' => 'Discover cultural tours, wildlife safaris, and outdoor adventures.',
+            'description' => 'Enjoy cultural experiences, sightseeing, jungle safaris, adventure sports, and hiking across Nepal.',
+            'font_icon' => 'bi bi-compass',
+            'order_level' => 3,
+            'display_on' => 'home',
+        ], $adminId);
 
-        Category::create([
-            'parent_id'        => $accommodation->id,
-            'name'             => 'Luxury Resorts',
-            'slug'             => 'luxury-resorts',
-            'excerpt'          => 'Premium stays with world-class amenities.',
-            'description'      => 'Indulge in luxury with stunning mountain views, spa services, and gourmet dining.',
-            'font_icon'        => 'bi bi-building',
-            'order_level'      => 2,
-            'display_on'       => 'home',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        $tourTypes = [
+            'Multi-Day Cultural Tours',
+            'Day Tours',
+            'Jungle Safari',
+            'Adventure Sports',
+            'Day Hiking',
+        ];
 
-        // Children of Cultural Experiences
-        Category::create([
-            'parent_id'        => $culture->id,
-            'name'             => 'Heritage Tours',
-            'slug'             => 'heritage-tours',
-            'excerpt'          => 'Explore UNESCO World Heritage Sites.',
-            'description'      => 'Visit ancient temples, palaces, and historical landmarks in Kathmandu, Patan, and Bhaktapur.',
-            'font_icon'        => 'bi bi-landmark',
-            'order_level'      => 1,
-            'display_on'       => 'default',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        $this->createChildren($tours, $tourTypes, $adminId);
 
-        Category::create([
-            'parent_id'        => $culture->id,
-            'name'             => 'Local Cuisine',
-            'slug'             => 'local-cuisine',
-            'excerpt'          => 'Taste the authentic flavors of Nepal.',
-            'description'      => 'Join cooking classes and food tours to discover Dal Bhat, Momos, and other local delicacies.',
-            'font_icon'        => 'bi bi-cup-hot',
-            'order_level'      => 2,
-            'display_on'       => 'default',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | D. Blogs
+        |--------------------------------------------------------------------------
+        */
+        $blogs = $this->createCategory([
+            'name' => 'Blogs',
+            'slug' => 'blogs',
+            'excerpt' => 'Travel stories, guides, and tips for your Nepal adventure.',
+            'description' => 'Read travel and tour guides, trekking information, destination highlights, and helpful travel tips.',
+            'font_icon' => 'bi bi-journal-richtext',
+            'order_level' => 4,
+            'display_on' => 'default',
+        ], $adminId);
 
-        // Children of Health & Wellness
-        Category::create([
-            'parent_id'        => $wellness->id,
-            'name'             => 'Yoga Retreats',
-            'slug'             => 'yoga-retreats',
-            'excerpt'          => 'Find your inner peace in the Himalayas.',
-            'description'      => 'Daily yoga sessions, meditation, and healthy organic meals in serene environments.',
-            'font_icon'        => 'bi bi-person-arms-up',
-            'order_level'      => 1,
-            'display_on'       => 'page',
-            'status'           => true,
-            'created_by'       => $adminId,
-            'updated_by'       => $adminId,
-        ]);
+        $blogTypes = [
+            'Travel And Tour',
+        ];
 
-        $this->command->info('✓ Categories and Sub-categories seeded successfully!');
+        $this->createChildren($blogs, $blogTypes, $adminId);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Destinations
+        |--------------------------------------------------------------------------
+        */
+        $destinations = $this->createCategory([
+            'name' => 'Destinations',
+            'slug' => 'destinations',
+            'excerpt' => 'Explore the most popular travel destinations in Nepal.',
+            'description' => 'Discover the natural beauty, culture, and adventures of Nepal’s top destinations.',
+            'font_icon' => 'bi bi-geo-alt',
+            'order_level' => 5,
+            'display_on' => 'home',
+        ], $adminId);
+
+        $destinationNames = [
+            'Chitwan',
+            'Kathmandu',
+            'Pokhara',
+            'Mustang',
+        ];
+
+        $this->createChildren($destinations, $destinationNames, $adminId);
+
+        $this->command?->info(
+            'Categories, sub-categories, and destinations seeded successfully!'
+        );
+    }
+
+    private function createCategory(array $data, ?int $adminId): Category
+    {
+        return Category::updateOrCreate(
+            ['slug' => $data['slug']],
+            array_merge([
+                'parent_id' => null,
+                'image' => null,
+                'meta_keywords' => $data['name'],
+                'meta_description' => $data['excerpt'],
+                'status' => true,
+                'created_by' => $adminId,
+                'updated_by' => $adminId,
+            ], $data)
+        );
+    }
+
+    private function createChildren(
+        Category $parent,
+        array $names,
+        ?int $adminId
+    ): void {
+        foreach ($names as $index => $name) {
+            $slug = Str::slug($name);
+
+            Category::updateOrCreate(
+                ['slug' => $slug],
+                [
+                    'parent_id' => $parent->id,
+                    'name' => $name,
+                    'excerpt' => "Explore {$name} with our Nepal travel packages.",
+                    'description' => "Discover {$name} and experience unforgettable travel adventures.",
+                    'image' => null,
+                    'font_icon' => 'bi bi-geo-alt',
+                    'order_level' => $index + 1,
+                    'display_on' => 'default',
+                    'meta_keywords' => $name,
+                    'meta_description' => "Explore {$name} with our travel and tour packages.",
+                    'status' => true,
+                    'created_by' => $adminId,
+                    'updated_by' => $adminId,
+                ]
+            );
+        }
     }
 }

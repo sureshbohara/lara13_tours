@@ -4,16 +4,30 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\HasImages;
+use App\Traits\Slugable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\HasImages;
-use App\Traits\Slugable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'parent_id', 'name', 'slug', 'excerpt', 'description', 'image', 
-    'font_icon', 'order_level', 'display_on', 'meta_keywords', 
-    'meta_description', 'status', 'created_by', 'updated_by',
+    'parent_id',
+    'name',
+    'slug',
+    'excerpt',
+    'description',
+    'image',
+    'font_icon',
+    'order_level',
+    'display_on',
+    'meta_keywords',
+    'meta_description',
+    'status',
+    'created_by',
+    'updated_by',
 ])]
 class Category extends Model
 {
@@ -29,27 +43,38 @@ class Category extends Model
         ];
     }
 
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
-    public function children()
+    public function children(): HasMany
     {
-        return $this->hasMany(Category::class, 'parent_id')->orderBy('order_level');
+        return $this->hasMany(Category::class, 'parent_id')
+            ->orderBy('order_level')
+            ->orderBy('name');
     }
 
-    public function creator()
+
+    public function packages(): BelongsToMany
+    {
+        return $this->belongsToMany(Package::class, 'package_categories');
+    }
+
+    public function blogs(): BelongsToMany
+    {
+        return $this->belongsToMany(Blog::class, 'blog_category');
+    }
+
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'created_by');
     }
 
-    public function updater()
+    public function updater(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'updated_by');
     }
-
-  
 
     public function scopeActive($query)
     {
@@ -58,48 +83,102 @@ class Category extends Model
 
     public function scopeOrdered($query)
     {
-        return $query->orderBy('order_level', 'asc')->orderBy('name', 'asc');
+        return $query->orderBy('order_level')->orderBy('name');
     }
 
     public function getAllDescendantIds(): array
     {
-        $categories = Category::select('id', 'parent_id')->get();
+        $categories = self::query()
+            ->select('id', 'parent_id')
+            ->get()
+            ->groupBy('parent_id');
+
         $ids = [];
         $queue = [$this->id];
 
-        while ($queue) {
+        while (!empty($queue)) {
             $parentId = array_shift($queue);
-            foreach ($categories as $category) {
-                if ((int) $category->parent_id === (int) $parentId) {
-                    $ids[] = $category->id;
-                    $queue[] = $category->id;
-                }
+
+            foreach ($categories->get($parentId, collect()) as $category) {
+                $ids[] = $category->id;
+                $queue[] = $category->id;
             }
         }
+
         return $ids;
     }
 
-    public static function getCategories($depth = 3) 
+    public static function getCategories(int $depth = 3)
     {
-        return self::with(['children' => function ($query) use ($depth) {
-            if ($depth > 0) {
-                $query->with(['children' => fn($q) => $q->with('children')->active()->ordered()])->active()->ordered();
-            }
-        }])
-        ->whereNull('parent_id')
-        ->select('id', 'parent_id', 'name', 'image', 'slug')
-        ->active()
-        ->ordered()
-        ->get(); 
+        $query = self::query()
+            ->whereNull('parent_id')
+            ->select('id', 'parent_id', 'name', 'image', 'slug')
+            ->active()
+            ->ordered();
+
+        if ($depth > 0) {
+            $query->with([
+                'children' => function ($query) use ($depth) {
+                    $query->active()
+                        ->ordered()
+                        ->select(
+                            'id',
+                            'parent_id',
+                            'name',
+                            'image',
+                            'slug'
+                        );
+
+                    if ($depth > 1) {
+                        $query->with(
+                            self::childrenWithDepth($depth - 1)
+                        );
+                    }
+                },
+            ]);
+        }
+
+        return $query->get();
     }
 
+    private static function childrenWithDepth(int $depth): array
+    {
+        return [
+            'children' => function ($query) use ($depth) {
+                $query->active()
+                    ->ordered()
+                    ->select(
+                        'id',
+                        'parent_id',
+                        'name',
+                        'image',
+                        'slug'
+                    );
+
+                if ($depth > 1) {
+                    $query->with(
+                        self::childrenWithDepth($depth - 1)
+                    );
+                }
+            },
+        ];
+    }
 
     public static function getFilteredRecords(array $filters = [])
     {
-        $query = self::query()->with(['parent', 'creator']);
+        $query = self::query()->with([
+            'parent',
+            'creator',
+        ]);
 
         if (isset($filters['status']) && $filters['status'] !== '') {
-            $query->where('status', filter_var($filters['status'], FILTER_VALIDATE_BOOLEAN));
+            $query->where(
+                'status',
+                filter_var(
+                    $filters['status'],
+                    FILTER_VALIDATE_BOOLEAN
+                )
+            );
         }
 
         if (isset($filters['parent_id']) && $filters['parent_id'] !== '') {
@@ -111,14 +190,15 @@ class Category extends Model
         }
 
         if (!empty($filters['name'])) {
-            $searchTerm = '%' . $filters['name'] . '%';
-            $query->where('name', 'like', $searchTerm);
+            $query->where(
+                'name',
+                'like',
+                '%' . $filters['name'] . '%'
+            );
         }
 
         return $query->ordered()
-                     ->paginate(15)
-                     ->appends($filters); 
+            ->paginate(15)
+            ->appends($filters);
     }
-
-
 }

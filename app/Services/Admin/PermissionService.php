@@ -10,23 +10,42 @@ use Illuminate\Support\Facades\DB;
 
 class PermissionService
 {
-   
+  
     protected array $entities = [
+        // Administration
         'user',
         'role',
         'permission',
-        'setting',
-        'banner',
-        'faqs',
-        'gallery',
-        'pages',
-        'reviews',
-        'service',
-        'teams',
-        'category',
-        'blog'
-    ];
+        'login_activity',
 
+        // Trip & Travel
+        'category',
+        'package',
+        'fixed_departure',
+
+        // Content Management
+        'page',
+        'blog',
+        'media',
+        'menu',
+
+        // Marketing
+        'subscriber',
+        'coupon',
+
+        // Site Elements
+        'banner',
+        'faq',
+        'review',
+        'gallery',
+        'team',
+
+        // System
+        'setting',
+        'site_health',
+        'backup',
+        'notification',
+    ];
 
     protected array $actions = [
         'read',
@@ -35,13 +54,11 @@ class PermissionService
         'delete',
     ];
 
-
     public function __construct(protected Permission $permission)
     {
         //
     }
 
-  
     public function getPermissionData(?int $roleId = null): array
     {
         $perm = $roleId
@@ -56,7 +73,6 @@ class PermissionService
         ];
     }
 
-
     public function validatePermissions(array $input): array
     {
         $validated = [];
@@ -70,7 +86,6 @@ class PermissionService
         return $validated;
     }
 
-
     public function createPermissions(int $roleId, array $input): Permission
     {
         return $this->permission->updateOrCreate(
@@ -79,12 +94,14 @@ class PermissionService
         );
     }
 
-  
     public function updatePermissions(int $permissionId, array $input): Permission
     {
         $perm = $this->permission->findOrFail($permissionId);
         $perm->update(['permissions' => $this->validatePermissions($input)]);
-        $perm->clearAdminCache();
+        
+        if (method_exists($perm, 'clearAdminCache')) {
+            $perm->clearAdminCache();
+        }
 
         return $perm->fresh();
     }
@@ -97,11 +114,12 @@ class PermissionService
             throw new \Exception('Super Admin permissions are locked.');
         }
 
-        $perm->clearAdminCache();
+        if (method_exists($perm, 'clearAdminCache')) {
+            $perm->clearAdminCache();
+        }
 
         return $perm->delete();
     }
-
 
     protected function getDefaultPermissions(): array
     {
@@ -111,8 +129,10 @@ class PermissionService
             $default[$entity] = array_fill_keys($this->actions, '0');
         }
 
+        // Default safe permissions for new roles
         $default['user']['read'] = '1';
         $default['setting']['read'] = '1';
+        $default['site_health']['read'] = '1';
 
         return $default;
     }

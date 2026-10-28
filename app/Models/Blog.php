@@ -7,6 +7,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Traits\HasImages;
 use App\Traits\Slugable;
 
@@ -31,14 +33,22 @@ class Blog extends Model
         ];
     }
 
-    public function categories()
+
+    public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'blog_category');
     }
 
-    public function creator()
+  
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'created_by');
+    }
+
+ 
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'updated_by');
     }
 
     public function scopeActive($query)
@@ -51,16 +61,13 @@ class Blog extends Model
         return $query->orderBy('order_level', 'asc')->orderBy('created_at', 'desc');
     }
 
-
     public static function getFilteredRecords(array $filters = [])
     {
         $query = self::query()->with(['categories', 'creator']);
 
-    
         if (isset($filters['status']) && $filters['status'] !== '') {
             $query->where('status', (int) $filters['status']);
         }
-
 
         if (isset($filters['category_id']) && $filters['category_id'] !== '') {
             $query->whereHas('categories', function ($q) use ($filters) {
@@ -68,7 +75,6 @@ class Blog extends Model
             });
         }
 
-      
         if (!empty($filters['search'])) {
             $searchTerm = '%' . $filters['search'] . '%';
             $query->where(function ($q) use ($searchTerm) {

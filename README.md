@@ -1,4 +1,4 @@
-# 🏔️ TOUR DASH - Advanced Travel & Tour Management System
+# TOUR DASH - Advanced Travel & Tour Management System
 
 A robust, enterprise-level Laravel 13 Admin Panel specifically designed for travel agencies, tour operators, and hospitality businesses. It features a modular architecture, queue-based background processing, and a comprehensive set of tools to manage trips, content, and customers efficiently.
 
@@ -45,7 +45,7 @@ A robust, enterprise-level Laravel 13 Admin Panel specifically designed for trav
 Follow these steps to set up the project locally:
 
 ### 1. Clone and Install Dependencies
-```bash
-git clone <your-repository-url>
+
+git clone <https://github.com/sureshbohara/lara13_tours>
 cd lara13
 composer install

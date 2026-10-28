@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\Category;
+use App\Models\Setting;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -16,6 +18,28 @@ class HandleInertiaRequests extends Middleware
 
     public function share(Request $request): array
     {
+
+        $megaMenuCategories = Category::whereNull('parent_id')
+            ->where('status', true)
+            ->with([
+                'children' => function ($q) {
+                    $q->where('status', true)
+                      ->select('id', 'parent_id', 'name', 'slug')
+                      ->orderBy('order_level')
+                      ->with(['packages' => function ($pq) {
+                          $pq->where('status', true)
+                             ->select('packages.id', 'packages.name', 'packages.slug', 
+                                      'packages.image', 'packages.trip_price', 
+                                      'packages.trip_previous_price')
+                             ->orderBy('view_count', 'desc');
+    
+                      }]);
+                }
+            ])
+            ->select('id', 'name', 'slug')
+            ->orderBy('order_level')
+            ->get();
+
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user(),
@@ -24,10 +48,8 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
-            'settings' => [
-                'site_name' => setting('system_name', config('app.name')),
-                'logo' => setting('logo_url'),
-            ],
+            'setting' => Setting::getInstance(),
+            'megaMenuCategories' => $megaMenuCategories,
         ]);
     }
 }

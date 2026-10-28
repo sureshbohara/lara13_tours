@@ -1,6 +1,5 @@
 <?php
 
-declare(strict_types=1);
 
 namespace Database\Seeders;
 
@@ -22,6 +21,8 @@ class DatabaseSeeder extends Seeder
             PageSeeder::class,
             TeamSeeder::class,
             CategorySeeder::class,
+            PackageSeeder::class,
+            BlogSeeder::class,
         ]);
     }
 }

@@ -7,6 +7,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;  
+use Illuminate\Database\Eloquent\Relations\BelongsToMany; 
+use Illuminate\Database\Eloquent\Relations\HasMany; 
 use App\Traits\HasImages;
 use App\Traits\Slugable;
 
@@ -48,11 +51,14 @@ class Package extends Model
         ];
     }
 
-    public function categories() {
+     public function categories(): BelongsToMany
+    {
         return $this->belongsToMany(Category::class, 'package_categories');
     }
 
-    public function fixedDepartures() {
+
+    public function fixedDepartures(): HasMany
+    {
         return $this->hasMany(FixedDeparture::class);
     }
 
@@ -65,15 +71,15 @@ class Package extends Model
     }
 
 
-      public function creator()
+     public function creator(): BelongsTo
     {
-        return $this->belongsTo(Admin::class, 'created_by');
+     return $this->belongsTo(Admin::class, 'created_by');
     }
 
-    public function updater()
-    {
-        return $this->belongsTo(Admin::class, 'updated_by');
-    }
+  public function updater(): BelongsTo
+   {
+    return $this->belongsTo(Admin::class, 'updated_by');
+   }
 
     public static function getFilteredRecords(array $filters = []) {
         $query = self::query()->with('categories');
