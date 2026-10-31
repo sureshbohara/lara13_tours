@@ -105,8 +105,8 @@ php artisan serve
 
 ## 🔑 Default Admin Credentials (After Seeding)
 *(Note: Change these immediately after first login)*
-- **Email:** `admin@example.com` *(Check your seeder for the exact email)*
-- **Password:** `password`
+- **Email:** `boharas371@gmail.com` *(Check your seeder for the exact email)*
+- **Password:** `password123`
 
 ---
 
