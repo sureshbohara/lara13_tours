@@ -21,7 +21,7 @@ class Gallery extends Model
 {
     use HasFactory, HasImages;
 
-  
+  protected $appends = ['image_url'];
     protected function casts(): array
     {
         return [

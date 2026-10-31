@@ -6,7 +6,7 @@
 <main class="page-content">
     <x-breadcrumb title="Dashboard" subTitle="Admin Dashboard" :breadcrumbItems="['Home', 'Main']" />
 
-   
+    <!-- Analytics Filter -->
     <div class="card radius-10 mb-3">
         <div class="card-header bg-transparent">
             <div class="row g-3 align-items-center">
@@ -34,7 +34,7 @@
         </div>
     </div>
 
-   
+    <!-- Core Business Stats -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 mb-3">
         <div class="col mb-3">
             <div class="card radius-10 h-100">
@@ -94,7 +94,69 @@
         </div>
     </div>
 
+    <!-- Booking Overview -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 mb-3">
+        <div class="col mb-3">
+            <div class="card radius-10 h-100 border-start border-4 border-primary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Total Bookings</p>
+                            <h4 class="my-1">{{ $stats['bookings_total'] }}</h4>
+                            <p class="mb-0 font-13 text-muted">All time reservations</p>
+                        </div>
+                        <div class="widget-icon-large bg-gradient-primary text-white ms-auto"><i class="bi bi-cart-check-fill"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <div class="card radius-10 h-100 border-start border-4 border-warning">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Pending Bookings</p>
+                            <h4 class="my-1">{{ $stats['bookings_pending'] }}</h4>
+                            <p class="mb-0 font-13 text-warning">Awaiting confirmation</p>
+                        </div>
+                        <div class="widget-icon-large bg-gradient-warning text-white ms-auto"><i class="bi bi-hourglass-split"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <div class="card radius-10 h-100 border-start border-4 border-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">Confirmed Bookings</p>
+                            <h4 class="my-1">{{ $stats['bookings_confirmed'] }}</h4>
+                            <p class="mb-0 font-13 text-success">Ready for adventure</p>
+                        </div>
+                        <div class="widget-icon-large bg-gradient-success text-white ms-auto"><i class="bi bi-check-circle-fill"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <a href="{{ route('admin.bookings.index') }}" class="text-decoration-none">
+                <div class="card radius-10 h-100 border-start border-4 border-info" style="transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <p class="mb-0 text-secondary">Manage Bookings</p>
+                                <h4 class="my-1 text-info">View All <i class="bi bi-arrow-right"></i></h4>
+                                <p class="mb-0 font-13 text-muted">Go to booking manager</p>
+                            </div>
+                            <div class="widget-icon-large bg-gradient-info text-white ms-auto"><i class="bi bi-table"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
 
+    <!-- Traffic Overview Chart -->
     <div class="card radius-10 mb-3">
         <div class="card-body">
             <h5 class="card-title mb-3">Traffic Overview</h5>
@@ -104,7 +166,7 @@
         </div>
     </div>
 
-   
+    <!-- Analytics Stats -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 mb-3">
         <div class="col mb-3">
             <div class="card radius-10 h-100">
@@ -160,8 +222,8 @@
         </div>
     </div>
 
-
     <div class="row">
+        <!-- Most Visited Pages -->
         <div class="col-12 col-lg-6 mb-3">
             <div class="card radius-10 h-100">
                 <div class="card-header bg-transparent">
@@ -192,28 +254,56 @@
             </div>
         </div>
 
+        <!--  Recent Bookings -->
         <div class="col-12 col-lg-6 mb-3">
             <div class="card radius-10 h-100">
-                <div class="card-header bg-transparent">
-                    <h5 class="mb-0">Top Browsers</h5>
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Bookings</h5>
+                    <a href="{{ route('admin.bookings.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Browser</th>
-                                    <th class="text-end">Count</th>
+                                    <th>Customer</th>
+                                    <th>Package</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($analytics['topBrowsers'] as $browser)
+                                @forelse($stats['recent_bookings'] as $booking)
                                     <tr>
-                                        <td>{{ $browser['browser'] }}</td>
-                                        <td class="text-end"><span class="badge bg-info rounded-pill">{{ $browser['count'] }}</span></td>
+                                        <td>
+                                            <div class="fw-bold">{{ $booking->name }}</div>
+                                            <small class="text-muted">{{ $booking->email }}</small>
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('admin.package.edit', $booking->package_id) }}" class="text-decoration-none text-truncate d-block" style="max-width: 150px;" title="{{ $booking->package->name ?? 'N/A' }}">
+                                                {{ $booking->package->name ?? 'N/A' }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <small>{{ $booking->travel_date ? $booking->travel_date->format('d M, Y') : 'Flexible' }}</small>
+                                        </td>
+                                        <td>
+                                            @php
+                                                $badgeClass = match($booking->status) {
+                                                    'confirmed' => 'success',
+                                                    'pending' => 'warning',
+                                                    'cancelled' => 'danger',
+                                                    'completed' => 'info',
+                                                    default => 'secondary'
+                                                };
+                                            @endphp
+                                            <span class="badge bg-{{ $badgeClass }} text-uppercase">{{ ucfirst($booking->status) }}</span>
+                                        </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="2" class="text-center py-3 text-muted">No data available</td></tr>
+                                    <tr>
+                                        <td colspan="4" class="text-center py-3 text-muted">No recent bookings found</td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>

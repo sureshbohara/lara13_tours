@@ -28,7 +28,7 @@ class Package extends Model
     use HasFactory, Slugable, HasImages;
 
     protected $table = 'packages';
-
+    protected $appends = ['image_url','feature_image_url'];
     protected function casts(): array
     {
         return [
@@ -70,13 +70,21 @@ class Package extends Model
         return $query->orderBy('order_level', 'asc')->orderBy('created_at', 'desc');
     }
 
+    public function reviews() {
+    return $this->hasMany(PackageReview::class);
+    }
 
-     public function creator(): BelongsTo
+    public function bookings(){
+        return $this->hasMany(Booking::class);
+    }
+
+
+    public function creator(): BelongsTo
     {
      return $this->belongsTo(Admin::class, 'created_by');
     }
 
-  public function updater(): BelongsTo
+    public function updater(): BelongsTo
    {
     return $this->belongsTo(Admin::class, 'updated_by');
    }

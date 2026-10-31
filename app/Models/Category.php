@@ -34,7 +34,7 @@ class Category extends Model
     use HasFactory, Slugable, HasImages;
 
     protected $table = 'categories';
-
+    protected $appends = ['image_url'];
     protected function casts(): array
     {
         return [

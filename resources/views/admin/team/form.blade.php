@@ -25,7 +25,7 @@
                 @endif
 
                 <div class="row g-3">
-                 
+        
                     <div class="col-lg-8">
                         <div class="card shadow-sm h-100">
                             <div class="card-body">
@@ -51,11 +51,10 @@
 
                                     <div class="col-12">
                                         <label class="form-label" for="bio">Bio / Description</label>
-                                        <textarea name="bio" id="bio" rows="3" class="form-control @error('bio') is-invalid @enderror" placeholder="Brief introduction about the team member...">{{ old('bio', isset($team) ? $team->bio : '') }}</textarea>
+                                        <textarea name="bio" id="bio" rows="4" class="form-control @error('bio') is-invalid @enderror" placeholder="Brief introduction about the team member's experience and role...">{{ old('bio', isset($team) ? $team->bio : '') }}</textarea>
                                         @error('bio') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                                     </div>
 
-                                    
                                     <div class="col-12 mt-4 pt-3 border-top">
                                         <h6 class="mb-3 text-primary"><i class="bi bi-share me-2"></i>Social Media Links</h6>
                                         <div class="row g-3">
@@ -101,12 +100,47 @@
                         </div>
                     </div>
 
-                    {{-- Right Column: Settings & Image --}}
+        
                     <div class="col-lg-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-body">
-                                <h5 class="card-title mb-3 border-bottom pb-2">Settings</h5>
+                                <h5 class="card-title mb-3 border-bottom pb-2">Settings & Profile</h5>
                                 <div class="row g-3">
+                                    
+                                <div class="col-12">
+                                    <label class="form-label" for="designation">Designation / Role <span class="text-danger">*</span></label>
+                                    
+                                    @php
+                                        $designations = [
+                                            'Founder & CEO',
+                                            'Managing Director',
+                                            'Head of Operations',
+                                            'Chief Technology Officer',
+                                            'Marketing Director',
+                                            'Senior Trekking Coordinator',
+                                            'Customer Experience Manager',
+                                            'Regional Operations Manager',
+                                            'Finance Manager',
+                                            'Senior Mountain Guide',
+                                            'Other'
+                                        ];
+                                        $currentDesig = old('designation', $team->designation ?? '');
+                                    @endphp
+
+                                    <select name="designation" id="designation" class="form-select @error('designation') is-invalid @enderror" required>
+                                        <option value="">Select Designation</option>
+                                        @foreach($designations as $desig)
+                                            <option value="{{ $desig }}" {{ $currentDesig == $desig ? 'selected' : '' }}>
+                                                {{ $desig }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    
+                                    @error('designation') 
+                                        <div class="invalid-feedback d-block">{{ $message }}</div> 
+                                    @enderror
+                                </div>
+
                                     <div class="col-12">
                                         <label class="form-label" for="order_level">Display Order</label>
                                         <input type="number" name="order_level" id="order_level" min="0" class="form-control @error('order_level') is-invalid @enderror" value="{{ old('order_level', isset($team) ? $team->order_level : '0') }}" placeholder="0 = Highest priority">
@@ -155,14 +189,12 @@
         $('#teamForm').on('submit', function(e) {
             e.preventDefault();
             
-            // Clear previous errors
             $('.invalid-feedback').remove();
             $('.is-invalid').removeClass('is-invalid');
             
             const formData = new FormData(this);
             const submitBtn = $('#submitBtn');
-            
-            // Prevent double submission
+        
             submitBtn.prop('disabled', true);
             
             $.ajax({
@@ -179,10 +211,8 @@
                     }, 1500);
                 },
                 error: function(xhr) {
-                    // Re-enable button on error
                     submitBtn.prop('disabled', false);
                     
-                    // Handle validation errors
                     if (xhr.status === 422 && xhr.responseJSON?.errors) {
                         $.each(xhr.responseJSON.errors, function(field, errors) {
                             const input = $('[name="' + field + '"]');

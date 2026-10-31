@@ -46,7 +46,7 @@
                                         @endphp
                                         <select name="display_on" id="display_on" class="form-select @error('display_on') is-invalid @enderror">
                                             <option value="default" {{ $currentDisplayOn == 'default' ? 'selected' : '' }}>Default</option>
-                                            <option value="home" {{ $currentDisplayOn == 'home' ? 'selected' : '' }}>Home</option>
+                                            <option value="memberships" {{ $currentDisplayOn == 'memberships' ? 'selected' : '' }}>Memberships</option>
                                             <option value="page" {{ $currentDisplayOn == 'page' ? 'selected' : '' }}>Page</option>
                                         </select>
                                         @error('display_on') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror

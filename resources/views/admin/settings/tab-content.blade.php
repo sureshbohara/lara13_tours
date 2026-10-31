@@ -82,7 +82,7 @@
                 $mediaFields = [
                     'logo' => ['label' => 'Website Logo', 'hint' => 'PNG/JPG. Recommended: 200x60px'],
                     'favicon' => ['label' => 'Favicon', 'hint' => 'ICO/PNG. Recommended: 32x32px'],
-                    'bg_image' => ['label' => 'Become Host Background', 'hint' => 'Background image for the Become a Host page'],
+                    'bg_image' => ['label' => 'Section Background', 'hint' => 'Background image for Home Page'],
                     'image1' => ['label' => 'About Us Hero Image', 'hint' => 'Main image for the About Us page'],
                     'footer_gateway_img' => ['label' => 'Payment Gateway Image', 'hint' => 'Image for payment methods in footer'],
                     'image2' => ['label' => 'Footer Logo', 'hint' => 'Alternative logo for the footer'],
@@ -381,33 +381,39 @@
         </div>
         <div class="row g-3">
             <div class="col-12">
-                <label class="form-label fw-semibold">About Us Subtitle (info1)</label>
+                <label class="form-label fw-semibold">About Us Info</label>
                 <textarea name="info1" class="form-control editor" rows="3" placeholder="Write a compelling introduction for the About Us page header...">{{ old('info1', setting('info1', '')) }}</textarea>
             </div>
+
             <div class="col-12">
-                <label class="form-label fw-semibold">About Us Mission (info2)</label>
+                <label class="form-label fw-semibold">About Us Mission</label>
                 <textarea name="info2" class="form-control editor" rows="3" placeholder="Tell your company's mission...">{{ old('info2', setting('info2', '')) }}</textarea>
             </div>
             <div class="col-12">
-                <label class="form-label fw-semibold">About Us Vision (info3)</label>
+                <label class="form-label fw-semibold">About Us Vision</label>
                 <textarea name="info3" class="form-control" rows="3" placeholder="Tell your company's vision...">{{ old('info3', setting('info3', '')) }}</textarea>
             </div>
+
             <div class="col-md-4">
-                <label class="form-label fw-semibold">Footer Info</label>
+                <label class="form-label fw-semibold">About Us Goal</label>
                 <textarea name="info4" class="form-control" rows="3" placeholder="e.g., Verified & Trusted Properties">{{ old('info4', setting('info4', '')) }}</textarea>
             </div>
+
             <div class="col-md-4">
-                <label class="form-label fw-semibold">Other Info 5</label>
+                <label class="form-label fw-semibold">Footer Info</label>
                 <textarea name="info5" class="form-control" rows="3" placeholder="e.g., Secure Online Payments">{{ old('info5', setting('info5', '')) }}</textarea>
             </div>
+
             <div class="col-md-4">
                 <label class="form-label fw-semibold">Other Info 6</label>
                 <textarea name="info6" class="form-control" rows="3" placeholder="e.g., 24/7 Local Support">{{ old('info6', setting('info6', '')) }}</textarea>
             </div>
+
             <div class="col-12">
                 <label class="form-label fw-semibold">Other Info 7</label>
                 <textarea name="info7" class="form-control" rows="3" placeholder="Additional information block...">{{ old('info7', setting('info7', '')) }}</textarea>
             </div>
+
         </div>
     </div>
 

@@ -4,7 +4,7 @@
             <img src="{{ setting('logo_url') }}" class="logo-icon" alt="{{ config('app.name') }} Logo">
         </div>
         <div>
-            <h4 class="logo-text">EZ DASH</h4>
+            <h4 class="logo-text">SP DASH</h4>
         </div>
         <div class="toggle-icon ms-auto">
             <i class="bi bi-chevron-double-left"></i>
@@ -20,6 +20,26 @@
                 <div class="menu-title">Dashboard</div>
             </a>
         </li>
+
+
+
+      
+        <li class="menu-label">Manage Bookings</li>
+        <li class="{{ request()->routeIs('admin.bookings.*') ? 'mm-active' : '' }}">
+            <a href="{{ route('admin.bookings.index') }}">
+                <div class="parent-icon"><i class="bi bi-cart-check-fill"></i></div>
+                <div class="menu-title">
+                    Bookings
+                    @php
+                        $pendingBookings = \App\Models\Booking::where('status', 'pending')->count();
+                    @endphp
+                    @if($pendingBookings > 0)
+                        <span class="badge bg-danger rounded-pill ms-auto">{{ $pendingBookings }}</span>
+                    @endif
+                </div>
+            </a>
+        </li>
+
 
   
         @canany(['category.read', 'package.read'])

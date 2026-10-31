@@ -9,6 +9,7 @@ use App\Models\AnalyticsData;
 use App\Models\Service;
 use App\Models\Package; 
 use App\Models\Review;
+use App\Models\Booking; 
 use Illuminate\Http\Request;
 
 class DashboardController extends BaseController
@@ -22,10 +23,16 @@ class DashboardController extends BaseController
         $stats = [
             'services_count'    => Service::count(),
             'services_active'   => Service::where('status', true)->count(),
-            'packages_count'    => Package::count(), // Fleet को सट्टा Package
+            'packages_count'    => Package::count(),
             'packages_active'   => Package::where('status', true)->count(),
             'reviews_count'     => Review::count(),
             'server'            => $this->getServerStats(),
+            
+            //3. Booking Stats
+            'bookings_total'    => Booking::count(),
+            'bookings_pending'  => Booking::where('status', 'pending')->count(),
+            'bookings_confirmed'=> Booking::where('status', 'confirmed')->count(),
+            'recent_bookings'   => Booking::with(['package', 'fixedDeparture'])->latest()->take(5)->get(),
         ];
 
         return view('admin.dashboard', [

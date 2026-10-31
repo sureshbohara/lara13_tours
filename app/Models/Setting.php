@@ -89,7 +89,7 @@ class Setting extends Model
      * The table associated with the model.
      */
     protected $table = 'settings';
-
+   
     protected function casts(): array
     {
         return [

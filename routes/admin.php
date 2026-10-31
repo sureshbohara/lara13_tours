@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\BookingController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -162,6 +163,12 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::post('coupons/status', [CouponController::class, 'toggleStatus'])->name('coupons.toggleStatus');
     Route::post('coupons/validate', [CouponController::class, 'validateCoupon'])->name('coupons.validate');
     Route::resource('coupons', CouponController::class);
+
+
+
+    // ─── Bookings Management ────────────────
+   Route::post('bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
+   Route::resource('bookings', BookingController::class)->except(['create', 'store', 'edit', 'update']);
 
 
 

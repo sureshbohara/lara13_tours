@@ -22,7 +22,7 @@ class Blog extends Model
     use HasFactory, Slugable, HasImages;
 
     protected $table = 'blogs';
-
+    protected $appends = ['image_url'];
     protected function casts(): array
     {
         return [

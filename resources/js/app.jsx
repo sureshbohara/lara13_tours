@@ -1,4 +1,10 @@
 import './bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'swiper/css';
+import 'swiper/css/effect-fade';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';
@@ -6,7 +12,7 @@ import { createRoot } from 'react-dom/client';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { Toaster } from 'react-hot-toast';
 
-const appName = import.meta.env.VITE_APP_NAME || 'EZ Travel';
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -24,7 +30,5 @@ createInertiaApp({
             </>
         );
     },
-    progress: {
-        color: '#2563EB',
-    },
+    progress: { color: '#2563EB' },
 });

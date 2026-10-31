@@ -72,7 +72,7 @@
                                         @error('description') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                                     </div>
 
-                                    {{-- ✅ FIXED: SEO Section with Proper Labels --}}
+                                
                                     <div class="col-12 mt-4 pt-3 border-top">
                                         <h6 class="mb-3 text-primary"><i class="bi bi-search me-2"></i>SEO Settings</h6>
                                         <div class="row g-3">
@@ -96,7 +96,7 @@
                         </div>
                     </div>
 
-                    {{-- Right Column: Settings & Media --}}
+                 
                     <div class="col-lg-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-body">
@@ -106,6 +106,7 @@
                                         <label class="form-label" for="display_on">Display On</label>
                                         @php $currentDisplay = old('display_on', isset($category) ? $category->display_on : 'default'); @endphp
                                         <select name="display_on" id="display_on" class="form-select @error('display_on') is-invalid @enderror">
+                                            <option value="header" {{ $currentDisplay == 'header' ? 'selected' : '' }}>Header</option>
                                             <option value="default" {{ $currentDisplay == 'default' ? 'selected' : '' }}>Default</option>
                                             <option value="home" {{ $currentDisplay == 'home' ? 'selected' : '' }}>Home</option>
                                             <option value="page" {{ $currentDisplay == 'page' ? 'selected' : '' }}>Page</option>

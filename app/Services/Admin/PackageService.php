@@ -26,7 +26,7 @@ class PackageService
     {
         return DB::transaction(function () use ($data, $categoryIds) {
             $this->handleImages($data, null);
-
+            $data = $this->normalizeJsonArrays($data);
             $data['created_by'] = Auth::guard('admin')->id();
             $data['updated_by'] = Auth::guard('admin')->id();
 
@@ -41,6 +41,7 @@ class PackageService
         return DB::transaction(function () use ($id, $data, $categoryIds) {
             $package = $this->model->findOrFail($id);
             $this->handleImages($data, $package);
+            $data = $this->normalizeJsonArrays($data);
             $data['updated_by'] = Auth::guard('admin')->id();
             $package->update($data);
             $package->categories()->sync($categoryIds);
@@ -237,6 +238,21 @@ class PackageService
         } else {
             unset($data['gallery']);
         }
+    }
+
+
+
+    protected function normalizeJsonArrays(array $data): array
+    {
+        $jsonFields = ['faqs', 'group_size_price', 'highlight_key', 'activities'];
+        
+        foreach ($jsonFields as $field) {
+            if (isset($data[$field]) && is_array($data[$field])) {
+                $data[$field] = array_values($data[$field]);
+            }
+        }
+        
+        return $data;
     }
 
 

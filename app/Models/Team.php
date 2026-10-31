@@ -10,14 +10,14 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasImages;
 
     #[Fillable([
-        'name', 'email', 'address', 'bio', 'image', 
+        'name', 'email', 'address','designation', 'bio', 'image', 
         'facebook', 'youtube', 'tiktok', 'instagram', 
         'order_level', 'status'
     ])]
 class Team extends Model
 {
     use HasFactory, HasImages;
-
+    protected $appends = ['image_url'];
     protected function casts(): array
     {
         return [

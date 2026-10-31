@@ -6,6 +6,7 @@
                     <th width="80">Image</th>
                     <th>Name</th>
                     <th>Parent</th>
+                    <th>Display On</th>
                     <th width="80">Order</th>
                     <th width="100">Status</th>
                     <th width="120">Actions</th>
@@ -14,12 +15,18 @@
             <tbody>
                 @forelse($categories as $category)
                 <tr>
+
                     <td><img src="{{ $category->image_url ?? asset('default/noimage.png') }}" class="rounded" width="50" height="50" style="object-fit: cover;"></td>
                     <td>
                         <strong>{{ $category->name }}</strong><br>
                         <small class="text-muted"><i class="bi bi-link-45deg"></i> {{ $category->slug }}</small>
                     </td>
+
                     <td><span class="badge bg-secondary">{{ $category->parent?->name ?? 'Root' }}</span></td>
+
+
+                    <td><span class="badge bg-secondary">{{ $category->display_on }}</span></td>
+
                     <td>
                         <input type="number" name="order_level" value="{{ $category->order_level }}" data-id="{{ $category->id }}" data-original="{{ $category->order_level }}" class="form-control form-control-sm order-level-input" style="width: 70px;">
                     </td>

@@ -24,8 +24,13 @@
     },
     "dependencies": {
         "@heroicons/react": "^2.2.0",
+        "@popperjs/core": "^2.11.8",
+        "bootstrap": "^5.3.8",
+        "html2pdf.js": "^0.14.0",
         "lucide-react": "^1.62.0",
         "react-hot-toast": "^2.6.1",
-        "swiper": "^14.3.0"
+        "swiper": "^14.3.0",
+        "yet-another-react-lightbox": "^3.32.2",
+        "ziggy-js": "^2.6.5"
     }
 }

@@ -106,26 +106,32 @@
                                         <img src="{{ isset($page) && $page->image_url ? $page->image_url : asset('default/noimage.png') }}" id="imagePreview" class="img-fluid rounded border" >
                                     </div>
 
-                                    <div class="col-12">
+                                     <div class="col-12">
                                         <div class="form-check form-switch">
+                                            <input type="hidden" name="show_in_menu" value="0">
                                             <input class="form-check-input" type="checkbox" name="show_in_menu" value="1" id="show_in_menu" {{ old('show_in_menu', $page->show_in_menu ?? false) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="show_in_menu">Show in Main Menu</label>
                                         </div>
                                     </div>
 
+                                 
                                     <div class="col-12">
                                         <div class="form-check form-switch">
+                                            <input type="hidden" name="show_in_footer" value="0">
                                             <input class="form-check-input" type="checkbox" name="show_in_footer" value="1" id="show_in_footer" {{ old('show_in_footer', $page->show_in_footer ?? false) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="show_in_footer">Show in Footer</label>
                                         </div>
                                     </div>
 
+                                
                                     <div class="col-12">
                                         <div class="form-check form-switch">
+                                            <input type="hidden" name="is_featured" value="0">
                                             <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="is_featured" {{ old('is_featured', $page->is_featured ?? false) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="is_featured">Mark as Featured</label>
                                         </div>
                                     </div>
+
 
                                     <div class="col-12">
                                         <label class="form-label" for="order_level">Display Order</label>

@@ -337,11 +337,7 @@
         url: "{{ route('admin.package.delete.gallery.image') }}",
         data: {
           image: $(this).data('image'),
-          id: {
-            {
-              isset($package) ? $package - > id : 0
-            }
-          },
+           id: {{ isset($package) ? $package->id : 0 }},
           _token: "{{ csrf_token() }}"
         },
         success: (res) => {

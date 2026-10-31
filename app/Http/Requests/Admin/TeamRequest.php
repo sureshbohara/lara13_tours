@@ -19,6 +19,7 @@ class TeamRequest extends FormRequest
             'name'        => 'required|string|max:255',
             'email'       => 'nullable|email|max:255',
             'address'     => 'nullable|string|max:500',
+            'designation'     => 'nullable|string|max:500',
             'bio'         => 'nullable|string',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'facebook'    => 'nullable|url|max:500',
