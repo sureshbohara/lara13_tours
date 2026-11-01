@@ -8,12 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable([
-    'name',
-    'display_name',
-    'description',
-    'status',
-])]
+#[Fillable(['name', 'display_name', 'description', 'status'])]
 class Role extends Model
 {
     use HasFactory;

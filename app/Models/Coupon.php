@@ -1,25 +1,28 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\HasStatus;
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'code', 'type', 'value', 'min_order_amount', 'max_discount',
-    'usage_limit', 'used_count', 'per_user_limit',
-    'start_date', 'end_date', 'applicable_packages',
-    'description', 'status', 'created_by', 'updated_by'
+    'code', 'type', 'value', 'min_order_amount', 'max_discount', 
+    'usage_limit', 'used_count', 'per_user_limit', 'start_date', 
+    'end_date', 'applicable_packages', 'description', 'status', 
+    'created_by', 'updated_by'
 ])]
 class Coupon extends Model
 {
-    use HasFactory;
+    use HasFactory, HasStatus, Searchable;
 
     protected $table = 'coupons';
+
+    protected array $searchableColumns = ['code', 'description'];
 
     protected function casts(): array
     {
@@ -37,7 +40,6 @@ class Coupon extends Model
         ];
     }
 
-    // Relationships
     public function creator(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'created_by');
@@ -48,32 +50,30 @@ class Coupon extends Model
         return $this->belongsTo(Admin::class, 'updated_by');
     }
 
-    // Scopes
     public function scopeActive($query)
     {
         return $query->where('status', true)
-                     ->where('start_date', '<=', now())
-                     ->where(function ($q) {
-                         $q->whereNull('end_date')
-                           ->orWhere('end_date', '>=', now());
-                     });
+            ->where('start_date', '<=', now())
+            ->where(function ($q) {
+                $q->whereNull('end_date')
+                  ->orWhere('end_date', '>=', now());
+            });
     }
 
     public function scopeValid($query)
     {
         return $query->active()
-                     ->where(function ($q) {
-                         $q->whereNull('usage_limit')
-                           ->orWhereColumn('used_count', '<', 'usage_limit');
-                     });
+            ->where(function ($q) {
+                $q->whereNull('usage_limit')
+                  ->orWhereColumn('used_count', '<', 'usage_limit');
+            });
     }
 
-    // Accessors
     public function getFormattedValueAttribute(): string
     {
         return $this->type === 'percentage' 
             ? $this->value . '%' 
-            : '$' . number_format($this->value, 2);
+            : '$' . number_format((float) $this->value, 2);
     }
 
     public function getIsValidAttribute(): bool
@@ -84,7 +84,6 @@ class Coupon extends Model
             && ($this->usage_limit === null || $this->used_count < $this->usage_limit);
     }
 
-    // Filter Method
     public static function getFilteredRecords(array $filters = [])
     {
         $query = self::query();
@@ -98,10 +97,7 @@ class Coupon extends Model
         }
 
         if (!empty($filters['search'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->where('code', 'like', '%' . $filters['search'] . '%')
-                  ->orWhere('description', 'like', '%' . $filters['search'] . '%');
-            });
+            $query->search($filters['search']);
         }
 
         return $query->latest()->paginate(15)->appends($filters);

@@ -1,77 +1,32 @@
 <?php
-
 declare(strict_types=1);
-
 namespace App\Services\Admin;
 
 use App\Models\Banner;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
-class BannerService
+class BannerService extends BaseCrudService
 {
-    public function __construct(
-        protected Banner $model,
-        protected MediaService $mediaService
-    ) {}
-
-    public function getItems(array $filters = [])
+    public function __construct(Banner $model, MediaService $mediaService)
     {
-        return $this->model::getFilteredRecords($filters);
+        parent::__construct($model, $mediaService, 'banners');
     }
 
-
-
-    public function store(array $data){
+    public function store(array $data): Banner
+    {
         return DB::transaction(function () use ($data) {
-            if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
-                $data['image'] = $this->mediaService->uploadImage($data['image'], 'banners');
-                $this->mediaService->dispatchImageProcessing($data['image']);
-            }
+            $this->handleImage($data, null);
             return $this->model->create($data);
         });
     }
 
-
-    public function update(int $id, array $data){
+    public function update(int $id, array $data): Banner
+    {
         return DB::transaction(function () use ($id, $data) {
-            $item = $this->model->findOrFail($id);
-            
-            if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
-                if ($item->image) $this->mediaService->deleteImageVariants($item->image);
-                $data['image'] = $this->mediaService->uploadImage($data['image'], 'banners');
-                $this->mediaService->dispatchImageProcessing($data['image']);
-            } elseif (array_key_exists('image', $data) && $data['image'] === null) {
-                if ($item->image) $this->mediaService->deleteImageVariants($item->image);
-                $data['image'] = null;
-            } else {
-                unset($data['image']);
-            }
-
-            $item->update($data);
-            return $item->fresh();
+            $banner = $this->model->findOrFail($id);
+            $this->handleImage($data, $banner);
+            $banner->update($data);
+            return $banner->fresh();
         });
-    }
-
-
-    public function delete(int $id): bool
-    {
-        $item = $this->model->findOrFail($id);
-        if ($item->image) $this->mediaService->deleteImageVariants($item->image);
-        return $item->delete();
-    }
-
-    public function toggleStatus(int $id): bool
-    {
-        $item = $this->model->findOrFail($id);
-        $item->status = !$item->status;
-        $item->save();
-        return $item->status;
-    }
-    
-
-    public function updateOrderLevel(int $id, int $orderLevel): bool
-    {
-        return $this->model->findOrFail($id)->update(['order_level' => $orderLevel]);
     }
 }

@@ -83,11 +83,9 @@ use App\Traits\HasImages;
 ])]
 class Setting extends Model
 {
-    use HasFactory, HasImages;
+   use HasFactory, HasImages;
 
-    /**
-     * The table associated with the model.
-     */
+   
     protected $table = 'settings';
    
     protected function casts(): array

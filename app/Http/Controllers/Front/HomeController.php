@@ -5,28 +5,28 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Models\Banner;
-use App\Models\Category;
-use App\Models\Package;
-use App\Models\Service;
-use App\Models\Review;
-use App\Models\Blog;
-use App\Models\Team;
-use App\Models\Faq;
-use App\Models\PackageReview;
-use App\Models\Booking; 
 use App\Mail\ContactFormMailable;
 use App\Mail\CustomizeTripMailable;
-use Illuminate\Support\Facades\Mail;
+use App\Models\Banner;
+use App\Models\Blog;
+use App\Models\Booking;
+use App\Models\Category;
+use App\Models\Faq;
 use App\Models\Gallery;
+use App\Models\Package;
+use App\Models\PackageReview;
 use App\Models\Page;
-use Inertia\Inertia;
+use App\Models\Review;
+use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
+
 class HomeController extends Controller
 {
+    
     public function index()
     {
-
         $banners = Banner::active()->ordered()->get();
         
         $destinationCategory = Category::where('slug', 'destinations')
@@ -39,8 +39,7 @@ class HomeController extends Controller
             }])
             ->first();
 
-
-         $trekkingCategory = Category::where('slug', 'trekking')
+        $trekkingCategory = Category::where('slug', 'trekking')
             ->where('status', true)
             ->with(['children' => function ($q) {
                 $q->where('status', true)
@@ -49,15 +48,13 @@ class HomeController extends Controller
             }])
             ->first();
 
-  
-         $popularTours = Package::where('status', true)
+        $popularTours = Package::where('status', true)
             ->select('id', 'name', 'slug', 'image', 'trip_price', 'duration', 'trip_grading', 'best_season')
             ->withCount('fixedDepartures') 
             ->orderBy('view_count', 'desc')
             ->limit(6)
             ->get();
 
-  
         $upcomingPackages = Package::where('status', true)
             ->select('id', 'name', 'slug', 'image', 'trip_price', 'duration')
             ->with(['fixedDepartures' => function ($q) {
@@ -69,7 +66,6 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-  
         $reviews = Review::active()->ordered()->limit(6)->get();
 
         $featuredBlog = Blog::active()
@@ -84,8 +80,7 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
- 
-        $teamMemberships = Team::active()->ordered()->where('display_on','memberships')->get();
+        $teamMemberships = Team::active()->ordered()->get();
 
         return Inertia::render('Home', [
             'banners' => $banners,
@@ -101,11 +96,15 @@ class HomeController extends Controller
     }
 
 
-
-     public function packageListing($slug){
+    public function packageListing(string $slug)
+    {
         $category = Category::where('slug', $slug)->where('status', true)->firstOrFail();
 
-        $subCategories = $category->children()->where('status', true)->withCount('packages')->ordered()->get(['id', 'name', 'slug', 'image', 'parent_id']);
+        $subCategories = $category->children()
+            ->where('status', true)
+            ->withCount('packages')
+            ->ordered()
+            ->get(['id', 'name', 'slug', 'image', 'parent_id']);
 
         $categoryIds = $subCategories->pluck('id')->toArray();
         $categoryIds[] = $category->id;
@@ -121,7 +120,6 @@ class HomeController extends Controller
                     $q->where('categories.id', $filterSubCategory);
                 }
             });
-
 
         if ($filterDuration) {
             if ($filterDuration === '1-5') {
@@ -143,7 +141,6 @@ class HomeController extends Controller
                 $packagesQuery->where('duration', 'like', '%16 %')->orWhere('duration', 'like', '%17 %')->orWhere('duration', 'like', '%18 %');
             }
         }
-
 
         if ($filterDifficulty) {
             $packagesQuery->where('trip_grading', 'like', '%' . $filterDifficulty . '%');
@@ -185,9 +182,9 @@ class HomeController extends Controller
         ]);
     }
 
-
-
-    public function packageDetails($slug){
+ 
+    public function packageDetails(string $slug)
+    {
         $package = Package::where('slug', $slug)
             ->where('status', true)
             ->with(['categories' => function($q) {
@@ -215,26 +212,24 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-
         $reviews = PackageReview::where('package_id', $package->id)
             ->where('status', true)
             ->orderBy('created_at', 'desc')
             ->get(['id', 'name', 'email', 'address', 'review', 'rating', 'created_at']);
 
-
         return Inertia::render('PackageDetails', [
             'package' => $package,
             'fixedDepartures' => $fixedDepartures,
             'relatedPackages' => $relatedPackages,
-             'reviews' => $reviews,
+            'reviews' => $reviews,
         ]);
     }
 
-
-
-    
-    public function storeReview(Request $request, $slug) {
+  
+    public function storeReview(Request $request, string $slug) 
+    {
         $package = Package::where('slug', $slug)->firstOrFail();
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -255,10 +250,11 @@ class HomeController extends Controller
         return back()->with('success', 'Thank you! Your review has been submitted successfully.');
     }
 
-
-
-    public function storeBooking(Request $request, $slug) {
+  
+    public function storeBooking(Request $request, string $slug) 
+    {
         $package = Package::where('slug', $slug)->firstOrFail();
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -268,6 +264,7 @@ class HomeController extends Controller
             'message' => 'nullable|string|max:1000',
             'fixed_departure_id' => 'nullable|exists:fixed_departures,id',
         ]);
+
         Booking::create([
             'package_id' => $package->id,
             'fixed_departure_id' => $validated['fixed_departure_id'] ?? null,
@@ -279,13 +276,13 @@ class HomeController extends Controller
             'message' => $validated['message'] ?? null,
             'status' => 'pending',
         ]);
+
         return back()->with('success', 'Your booking request has been submitted successfully! We will contact you shortly.');
     }
 
-
-
-
-    public function blogs() {
+  
+    public function blogs() 
+    {
         $blogs = Blog::active()->with(['categories', 'creator'])->latest()->paginate(6);
 
         $popularPosts = Blog::active()
@@ -300,15 +297,15 @@ class HomeController extends Controller
         ]);
     }
 
-
-
-    public function blogDetails($slug) {
+    public function blogDetails(string $slug) 
+    {
         $blog = Blog::where('slug', $slug)
             ->active()
             ->with('categories')
             ->firstOrFail();
 
         $blog->increment('views');
+        
         $popularPosts = Blog::active()
             ->where('id', '!=', $blog->id)
             ->with('categories')
@@ -323,74 +320,79 @@ class HomeController extends Controller
     }
 
 
-
-
-public function contact() {
-    return Inertia::render('Contact');
-}
-
-public function sendContactEmail(Request $request) {
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'phone' => 'nullable|string|max:20',
-        'email' => 'required|email|max:255',
-        'subject' => 'nullable|string|max:255',
-        'message' => 'required|string|min:10|max:2000',
-    ]);
-    try {
-        Mail::to(config('mail.from.address', 'boharas371@gmail.com'))
-            ->send(new ContactFormMailable($validated));
-
-        return back()->with('success', 'Message sent successfully!');
-    } catch (\Exception $e) {
-        return back()->with('error', 'Failed to send message. Please try again.');
+    public function contact() 
+    {
+        return Inertia::render('Contact');
     }
-}
 
+ 
+    public function sendContactEmail(Request $request) 
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'required|email|max:255',
+            'subject' => 'nullable|string|max:255',
+            'message' => 'required|string|min:10|max:2000',
+        ]);
 
+        try {
+            $adminEmail = config('mail.from.address', 'boharas371@gmail.com');
+            
+            Mail::to($adminEmail)->queue(new ContactFormMailable($validated));
 
-public function faqs() {
-    $faqs = Faq::active()->ordered()->get();
-    return Inertia::render('Faqs', [
-        'faqs' => $faqs,
-    ]);
-}
+            return back()->with('success', 'Message sent successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to send message. Please try again.');
+        }
+    }
 
-public function team() {
-    $teamMembers = Team::active()->ordered()->get();
-    
-    return Inertia::render('Team', [
-        'teamMembers' => $teamMembers,
-    ]);
-}
+ 
+    public function faqs() 
+    {
+        $faqs = Faq::active()->ordered()->get();
+        
+        return Inertia::render('Faqs', [
+            'faqs' => $faqs,
+        ]);
+    }
 
+ 
+    public function team() 
+    {
+        $teamMembers = Team::active()->ordered()->get();
+        
+        return Inertia::render('Team', [
+            'teamMembers' => $teamMembers,
+        ]);
+    }
 
-public function gallery() {
-    $images = Gallery::active()
-        ->ordered()
-        ->paginate(12);
-    return Inertia::render('Gallery', [
-        'images' => $images,
-    ]);
-}
+    public function gallery() 
+    {
+        $images = Gallery::active()->ordered()->paginate(12);
+        
+        return Inertia::render('Gallery', [
+            'images' => $images,
+        ]);
+    }
 
+  
+    public function about() 
+    {
+        return Inertia::render('About');
+    }
 
-public function about() {
-    return Inertia::render('About');
-}
+    public function cmsPage(string $slug) 
+    {
+        $page = Page::where('slug', $slug)->active()->firstOrFail();
+        
+        return Inertia::render('CmsPage', [
+            'page' => $page,
+        ]);
+    }
 
-
-public function cmsPage($slug) {
-    $page = Page::where('slug', $slug)->active()->firstOrFail();
-    return Inertia::render('CmsPage', [
-        'page' => $page,
-    ]);
-}
-
-
-
-
-    public function customizeTrip() {
+    public function customizeTrip() 
+    {
         $packages = Package::where('status', true)
             ->select('id', 'name', 'slug')
             ->orderBy('name', 'asc')
@@ -401,7 +403,9 @@ public function cmsPage($slug) {
         ]);
     }
 
-    public function sendCustomizeTripEmail(Request $request) {
+  
+    public function sendCustomizeTripEmail(Request $request) 
+    {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -416,14 +420,13 @@ public function cmsPage($slug) {
         ]);
 
         try {
-            $adminEmail = 'boharas371@gmail.com';
-            Mail::to($adminEmail)->send(new CustomizeTripMailable($validated));
+            $adminEmail = config('mail.from.address', 'boharas371@gmail.com');
+            
+            Mail::to($adminEmail)->queue(new CustomizeTripMailable($validated));
 
             return back()->with('success', 'Your customize trip request has been sent successfully! We will contact you shortly.');
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to send request. Please try again later.');
         }
     }
-    
-
 }

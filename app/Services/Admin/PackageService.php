@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Services\Admin;
@@ -7,49 +6,51 @@ namespace App\Services\Admin;
 use App\Models\FixedDeparture;
 use App\Models\Package;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-class PackageService
+use Illuminate\Support\Facades\DB;
+
+class PackageService extends BaseCrudService
 {
-    public function __construct(
-        protected Package $model,
-        protected MediaService $mediaService
-    ) {}
+    public function __construct(Package $model, MediaService $mediaService){
+        parent::__construct($model, $mediaService, 'packages');
+    }
 
     public function getPackages(array $filters = [])
     {
         return $this->model::getFilteredRecords($filters);
     }
 
-    public function storePackage(array $data, array $categoryIds = [])
+    public function storePackage(array $data, array $categoryIds = []): Package
     {
         return DB::transaction(function () use ($data, $categoryIds) {
-            $this->handleImages($data, null);
+            $this->handlePackageImages($data, null);
             $data = $this->normalizeJsonArrays($data);
             $data['created_by'] = Auth::guard('admin')->id();
             $data['updated_by'] = Auth::guard('admin')->id();
 
             $package = $this->model->create($data);
             $package->categories()->sync($categoryIds);
+            
             return $package->fresh(['categories', 'creator']);
         });
     }
 
-    public function updatePackage(int $id, array $data, array $categoryIds = [])
+    public function updatePackage(int $id, array $data, array $categoryIds = []): Package
     {
         return DB::transaction(function () use ($id, $data, $categoryIds) {
             $package = $this->model->findOrFail($id);
-            $this->handleImages($data, $package);
+            $this->handlePackageImages($data, $package);
             $data = $this->normalizeJsonArrays($data);
             $data['updated_by'] = Auth::guard('admin')->id();
+            
             $package->update($data);
             $package->categories()->sync($categoryIds);
+            
             return $package->fresh(['categories', 'updater']);
         });
     }
 
-    public function deletePackage(int $id): bool
+    public function delete(int $id): bool
     {
         $package = $this->model->findOrFail($id);
         
@@ -63,19 +64,6 @@ class PackageService
         return $package->delete();
     }
 
-    public function toggleStatus(int $id): bool
-    {
-        $package = $this->model->findOrFail($id);
-        $package->status = !$package->status;
-        $package->save();
-        return $package->status;
-    }
-
-    public function updateOrderLevel(int $id, int $orderLevel): bool
-    {
-        return $this->model->findOrFail($id)->update(['order_level' => $orderLevel]);
-    }
-
     public function updateDisplayType(int $id, ?string $displayOn): bool
     {
         return $this->model->findOrFail($id)->update(['display_on' => $displayOn]);
@@ -87,7 +75,6 @@ class PackageService
     }
 
 
-
     public function deleteGalleryImage(int $id, string $imageName): void
     {
         $package = $this->model->findOrFail($id);
@@ -97,14 +84,13 @@ class PackageService
             unset($gallery[$key]);
             $package->gallery = array_values($gallery); 
             $package->save();
-            $absolutePath = public_path('images/' . $imageName);
+            
+            $absolutePath = public_path('images/' . ltrim($imageName, '/'));
             if (file_exists($absolutePath)) {
                 unlink($absolutePath);
             }
         }
     }
-
-
 
     public function updateItinerary(int $id, array $data): bool
     {
@@ -132,30 +118,26 @@ class PackageService
     public function updateIncExc(int $id, array $data): bool
     {
         $package = $this->model->findOrFail($id);
-        $includedItems = [];
-        if (isset($data['included']['content']) && is_array($data['included']['content'])) {
-            foreach ($data['included']['content'] as $content) {
-                if (!empty(trim((string) $content))) {
-                    $includedItems[] = ['content' => trim((string) $content)];
+        
+        $transformList = function (array $listData): array {
+            $items = [];
+            if (isset($listData['content']) && is_array($listData['content'])) {
+                foreach ($listData['content'] as $content) {
+                    if (!empty(trim((string) $content))) {
+                        $items[] = ['content' => trim((string) $content)];
+                    }
                 }
             }
-        }
+            return $items;
+        };
 
-  
-        $excludedItems = [];
-        if (isset($data['excluded']['content']) && is_array($data['excluded']['content'])) {
-            foreach ($data['excluded']['content'] as $content) {
-                if (!empty(trim((string) $content))) {
-                    $excludedItems[] = ['content' => trim((string) $content)];
-                }
-            }
-        }
-
-        $package->included_data = $includedItems;
-        $package->excluded_data = $excludedItems;
+        $package->included_data = $transformList($data['included'] ?? []);
+        $package->excluded_data = $transformList($data['excluded'] ?? []);
 
         return $package->save();
     }
+
+
 
     public function updateEquipment(int $id, array $data): bool
     {
@@ -182,8 +164,7 @@ class PackageService
         return $package->save();
     }
 
-    public function getFixedDepartures()
-    {
+    public function getFixedDepartures(){
         return FixedDeparture::with('package')->ordered()->paginate(15);
     }
 
@@ -204,17 +185,19 @@ class PackageService
         return $dep->save();
     }
 
-    
-    protected function handleImages(array &$data, ?Package $package): void
+ 
+    protected function handlePackageImages(array &$data, ?Package $package): void
     {
+     
         foreach (['image', 'feature_image'] as $field) {
             if (isset($data[$field]) && $data[$field] instanceof UploadedFile) {
                 if ($package && $package->{$field}) {
                     $this->mediaService->deleteImageVariants($package->{$field});
                 }
                 $data[$field] = $this->mediaService->uploadImage($data[$field], 'packages');
-                $this->mediaService->dispatchImageProcessing($data[$field]); 
-                
+                if (method_exists($this->mediaService, 'dispatchImageProcessing')) {
+                    $this->mediaService->dispatchImageProcessing($data[$field]);
+                }
             } elseif (array_key_exists($field, $data) && $data[$field] === null) {
                 if ($package && $package->{$field}) {
                     $this->mediaService->deleteImageVariants($package->{$field});
@@ -225,13 +208,16 @@ class PackageService
             }
         }
         
+     
         if (isset($data['gallery']) && is_array($data['gallery'])) {
             $existingGallery = $package ? ($package->gallery ?? []) : [];
             foreach ($data['gallery'] as $file) {
                 if ($file instanceof UploadedFile) {
                     $path = $this->mediaService->uploadImage($file, 'packages/gallery');
                     $existingGallery[] = $path;
-                    $this->mediaService->dispatchImageProcessing($path);
+                    if (method_exists($this->mediaService, 'dispatchImageProcessing')) {
+                        $this->mediaService->dispatchImageProcessing($path);
+                    }
                 }
             }
             $data['gallery'] = $existingGallery;
@@ -239,8 +225,6 @@ class PackageService
             unset($data['gallery']);
         }
     }
-
-
 
     protected function normalizeJsonArrays(array $data): array
     {
@@ -254,6 +238,4 @@ class PackageService
         
         return $data;
     }
-
-
 }

@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
@@ -10,8 +9,8 @@ use App\Models\Category;
 use App\Models\Package;
 use App\Services\Admin\PackageService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PackageController extends BaseController
@@ -29,13 +28,11 @@ class PackageController extends BaseController
         $this->middleware('can:package.delete')->only(['destroy', 'deleteFixDepature']);
     }
 
-    // ==========================================
-    // 1. CRUD Operations
-    // ==========================================
+
 
     public function index(Request $request): View
     {
-        $filters = $request->only('status', 'name');
+        $filters = $request->only('status', 'name', 'search');
         
         return view('admin.package.index', [
             'packages' => $this->service->getPackages($filters),
@@ -90,13 +87,10 @@ class PackageController extends BaseController
 
     public function destroy(Package $package): RedirectResponse
     {
-        $this->service->deletePackage($package->id);
+        $this->service->delete($package->id);
         return redirect()->back()->with('success', 'Package deleted successfully!');
     }
 
-    // ==========================================
-    // 2. Package Features (Itinerary, Inc/Exc, Equipment)
-    // ==========================================
 
     public function tripItinerary(Request $request, int $id): View|RedirectResponse
     {
@@ -132,9 +126,7 @@ class PackageController extends BaseController
         return view('admin.package.equipment', ['data' => Package::findOrFail($id)]);
     }
 
-    // ==========================================
-    // 3. Pricing & Gallery Management
-    // ==========================================
+
 
     public function packagePrices(): View
     {
@@ -168,9 +160,7 @@ class PackageController extends BaseController
         return response()->json(['status' => 200, 'message' => 'Gallery image deleted successfully!']);
     }
 
-    // ==========================================
-    // 4. Fixed Departures Management
-    // ==========================================
+ 
 
     public function fixDepature(): View
     {
@@ -226,14 +216,11 @@ class PackageController extends BaseController
         return response()->json(['status' => 200, 'message' => 'Departure status updated successfully!']);
     }
 
-    // ==========================================
-    // 5. Quick Actions (Status, Order, Type)
-    // ==========================================
+  
 
     public function packageStatus(Request $request): JsonResponse
     {
         $request->validate(['status_id' => 'required|exists:packages,id']);
-        
         $newStatus = $this->service->toggleStatus((int) $request->status_id);
         
         return $this->successJson('Package status updated successfully!', ['new_status' => $newStatus]);
@@ -245,7 +232,7 @@ class PackageController extends BaseController
             'id' => 'required|exists:packages,id',
             'order_level' => 'required|integer|min:0',
         ]);
-        
+    
         $this->service->updateOrderLevel((int) $request->id, (int) $request->order_level);
         
         return $this->successJson('Display order updated successfully!');

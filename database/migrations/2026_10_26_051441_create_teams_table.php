@@ -11,6 +11,7 @@ return new class extends Migration {
             $table->string('name', 255);
             $table->string('email', 255)->nullable();
             $table->string('address', 500)->nullable();
+            $table->string('designation')->nullable();
             $table->longText('bio')->nullable();
             $table->string('image', 500)->nullable();
             $table->string('facebook', 500)->nullable();

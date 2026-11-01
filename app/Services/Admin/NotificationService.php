@@ -8,6 +8,10 @@ use App\Models\Admin;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Mail\Mailable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
 
 class NotificationService
 {
@@ -103,10 +107,29 @@ class NotificationService
         ]);
 
         try {
-            Mail::queue($view, $data, function ($mail) use ($admin, $title) {
-                $mail->to($admin->email)
-                     ->subject($title);
-            });
+     
+            $mailable = new class($view, $data, $title) extends Mailable implements ShouldQueue {
+                use Queueable, SerializesModels;
+
+                public $viewName;
+                public $viewData;
+                public $mailTitle;
+
+                public function __construct($viewName, $viewData, $mailTitle) {
+                    $this->viewName = $viewName;
+                    $this->viewData = $viewData;
+                    $this->mailTitle = $mailTitle;
+                }
+
+                public function build() {
+                    return $this->subject($this->mailTitle)
+                                ->view($this->viewName)
+                                ->with($this->viewData);
+                }
+            };
+
+    
+            Mail::to($admin->email)->queue($mailable);
 
             $notification->update([
                 'status' => 'sent',
@@ -123,8 +146,6 @@ class NotificationService
         }
     }
 
-
-
     public function getNotificationsForAdmin(int $adminId, int $limit = 10)
     {
         return Notification::forAdmin($adminId)
@@ -133,14 +154,10 @@ class NotificationService
             ->get();
     }
 
-
     public function getUnreadCount(int $adminId): int
     {
         return Notification::forAdmin($adminId)->unread()->count();
     }
-
-
-
 
     public function markAllAsRead(int $adminId): int
     {
@@ -148,6 +165,4 @@ class NotificationService
             ->unread()
             ->update(['read_at' => now()]);
     }
-
-
 }

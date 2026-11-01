@@ -11,7 +11,6 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-
             Route::middleware('web')
                  ->prefix('admin') 
                  ->group(base_path('routes/admin.php'));
@@ -20,15 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
-        ]);
-
-        
-
-        $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
 
-    
         $middleware->alias([
             'auth'        => \App\Http\Middleware\Authenticate::class,
             'admin.guest' => \App\Http\Middleware\RedirectIfAdminAuthenticated::class,

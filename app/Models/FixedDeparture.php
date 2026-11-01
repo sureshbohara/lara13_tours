@@ -8,10 +8,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable([
-    'package_id', 'start_date', 'end_date', 'discount_price', 
-    'max_seats', 'booked_seats', 'description', 'status'
-])]
+
+#[Fillable(['package_id', 'start_date', 'end_date', 'discount_price', 'max_seats', 'booked_seats', 'description', 'status'])]
 class FixedDeparture extends Model
 {
     use HasFactory;

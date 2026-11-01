@@ -1,50 +1,34 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Services\Admin;
 
 use App\Models\Faq;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 
-class FaqService
+class FaqService extends BaseCrudService
 {
-    public function __construct(protected Faq $model) {}
-
-    public function getItems(array $filters = [])
+    public function __construct(Faq $model, MediaService $mediaService)
     {
-        return $this->model::getFilteredRecords($filters);
+        parent::__construct($model, $mediaService, ''); 
     }
 
-    public function store(array $data)
-    {
-        return $this->model->create($data);
+    public function store(array $data): Faq 
+    { 
+        return $this->model->create($data); 
     }
 
-    public function update(int $id, array $data)
+    public function update(int $id, array $data): Faq 
     {
         $item = $this->model->findOrFail($id);
         $item->update($data);
-        
         return $item->fresh();
     }
 
-    public function delete(int $id): bool
+    protected function deleteAssociatedImages(Model $item): void 
     {
-        return $this->model->findOrFail($id)->delete();
+        // Do nothing
     }
 
-    public function toggleStatus(int $id): bool
-    {
-        $item = $this->model->findOrFail($id);
-        $item->status = !$item->status;
-        $item->save();
-        
-        return $item->status;
-    }
-
-    public function updateOrderLevel(int $id, int $orderLevel): bool
-    {
-        return $this->model->findOrFail($id)->update(['order_level' => $orderLevel]);
-    }
+    
 }

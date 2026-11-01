@@ -6,71 +6,36 @@ namespace App\Traits;
 
 trait HasImages
 {
-    /**
-     * Get the image URL attribute.
-     */
-    public function getImageUrlAttribute(): ?string
+    protected function imageUrl(?string $path): string
     {
-         return $this->resolveImage($this->image ?? null);
-    }
-
-    public function getFeatureImageUrlAttribute(): ?string
-    {
-        return $this->resolveImage($this->feature_image ?? null);
-    }
-
-    public function getLogoUrlAttribute(): string
-    {
-        return $this->resolveImage($this->logo ?? null);
-    }
-
-
-    public function getFaviconUrlAttribute(): string
-    {
-        return $this->resolveImage($this->favicon ?? null);
-    }
-
-
-    public function getLoaderUrlAttribute(): string
-    {
-        return $this->resolveImage($this->loader ?? null);
-    }
-
-    public function getBgImageUrlAttribute(): string
-    {
-        return $this->resolveImage($this->bg_image ?? null);
-    }
-    public function getFooterGatewayImgUrlAttribute(): string
-    {
-        return $this->resolveImage($this->footer_gateway_img ?? null);
-    }
-
-
-    public function getBreadcrumbUrlAttribute(): string
-    {
-        return $this->resolveImage($this->breadcrumb ?? null);
-    }
-    public function getImage1UrlAttribute(): string
-    {
-        return $this->resolveImage($this->image1 ?? null);
-    }
-
-
-    public function getImage2UrlAttribute(): string
-    {
-        return $this->resolveImage($this->image2 ?? null);
-    }
-
-
-    protected function resolveImage(?string $path): string
-    {
-        if (empty($path)) {
+        if (blank($path)) {
             return asset('default/noimage.png');
         }
+
         if (filter_var($path, FILTER_VALIDATE_URL)) {
             return $path;
         }
-        return asset('images/' . $path);
+
+        return asset('images/' . ltrim($path, '/'));
     }
 
+    public function getImageUrlAttribute(): string { return $this->imageUrl($this->image); }
+
+    public function getFeatureImageUrlAttribute(): string { return $this->imageUrl($this->feature_image); }
+
+    public function getLogoUrlAttribute(): string { return $this->imageUrl($this->logo); }
+
+    public function getFaviconUrlAttribute(): string { return $this->imageUrl($this->favicon); }
+
+    public function getLoaderUrlAttribute(): string { return $this->imageUrl($this->loader); }
+
+    public function getBgImageUrlAttribute(): string { return $this->imageUrl($this->bg_image); }
+
+    public function getFooterGatewayImgUrlAttribute(): string { return $this->imageUrl($this->footer_gateway_img); }
+
+    public function getBreadcrumbUrlAttribute(): string { return $this->imageUrl($this->breadcrumb); }
+
+    public function getImage1UrlAttribute(): string { return $this->imageUrl($this->image1); }
+    
+    public function getImage2UrlAttribute(): string { return $this->imageUrl($this->image2); }
 }

@@ -8,13 +8,23 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\Admin\FaqRequest;
 use App\Models\Faq;
 use App\Services\Admin\FaqService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class FaqController extends BaseController
 {
-    public function __construct(protected FaqService $service) {}
+    public function __construct(protected FaqService $service) 
+    {
+        $this->middleware('auth:admin');
+        $this->middleware('can:faq.read')->only(['index']);
+        $this->middleware('can:faq.create')->only(['create', 'store']);
+        $this->middleware('can:faq.update')->only(['edit', 'update', 'faqStatus', 'updateOrderLevel']);
+        $this->middleware('can:faq.delete')->only(['destroy']);
+    }
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         return view('admin.faqs.index', [
             'items'   => $this->service->getItems($request->only('status', 'search')),
@@ -22,50 +32,60 @@ class FaqController extends BaseController
         ]);
     }
 
-    public function create()
+    public function create(): View
     {
         return view('admin.faqs.form');
     }
 
-    public function store(FaqRequest $request)
+    public function store(FaqRequest $request): JsonResponse
     {
         $item = $this->service->store($request->validated());
+
         return $this->successJson('FAQ created successfully!', $item, 201);
     }
 
-    public function edit(Faq $faq)
+    public function edit(Faq $faq): View
     {
         return view('admin.faqs.form', compact('faq'));
     }
 
-    public function update(FaqRequest $request, Faq $faq)
+    public function update(FaqRequest $request, Faq $faq): JsonResponse
     {
         $updated = $this->service->update($faq->id, $request->validated());
+
         return $this->successJson('FAQ updated successfully!', $updated);
     }
 
-    public function destroy(Faq $faq)
+    public function destroy(Faq $faq): RedirectResponse
     {
         $this->service->delete($faq->id);
+
         return redirect()->back()->with('success', 'Deleted permanently!');
     }
 
-    public function faqStatus(Request $request)
+    public function faqStatus(Request $request): JsonResponse
     {
-        $request->validate(['status_id' => 'required|exists:faqs,id']);
+        $request->validate([
+            'status_id' => ['required', 'integer', 'exists:faqs,id'],
+        ]);
+
         $newStatus = $this->service->toggleStatus((int) $request->status_id);
-        
+
         return $this->successJson('Status updated', ['new_status' => $newStatus]);
     }
 
-    public function updateOrderLevel(Request $request)
+    public function updateOrderLevel(Request $request): JsonResponse
     {
         $request->validate([
-            'id'          => 'required|exists:faqs,id',
-            'order_level' => 'required|integer|min:0',
+            'id'          => ['required', 'integer', 'exists:faqs,id'],
+            'order_level' => ['required', 'integer', 'min:0'],
         ]);
-        
-        $this->service->updateOrderLevel((int) $request->id, (int) $request->order_level);
+
+        $this->service->updateOrderLevel(
+            (int) $request->id,
+            (int) $request->order_level
+        );
+
         return $this->successJson('Order updated!');
     }
 }

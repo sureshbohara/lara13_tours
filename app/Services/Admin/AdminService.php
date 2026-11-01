@@ -1,59 +1,48 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Services\Admin;
 
 use App\Models\Admin;
 use App\Models\Role;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class AdminService
+class AdminService extends BaseCrudService
 {
-  
-    public function __construct(
-        protected Admin $admin,
-        protected MediaService $mediaService
-    ) {
-        //
+    public function __construct(Admin $model, MediaService $mediaService)
+    {
+        parent::__construct($model, $mediaService, 'admin-avatars');
     }
 
-  
-    public function getAdmins(array $filters = [], ?int $excludeId = null){
+    public function getAdmins(array $filters = [], ?int $excludeId = null)
+    {
         return Admin::getFilteredRecords($filters, $excludeId);
     }
 
-
- 
-    public function getRolesForSelect(){
-        return Role::active()
-            ->orderBy('name')
-            ->pluck('display_name', 'id');
+    public function getRolesForSelect()
+    {
+        return Role::active()->orderBy('name')->pluck('display_name', 'id');
     }
 
-
-    public function storeAdmin(array $data){
+    public function storeAdmin(array $data): Admin
+    {
         return DB::transaction(function () use ($data) {
             if (isset($data['password'])) {
                 $data['password'] = Hash::make($data['password']);
             }
+            
+            $this->handleImage($data, null, 'image');
 
-            if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
-                $path = $this->mediaService->uploadImage($data['image'], 'admin-avatars');
-                $this->mediaService->dispatchImageProcessing($path);
-                $data['image'] = $path;
-            }
-
-            return $this->admin->create($data);
+            return $this->model->create($data);
         });
     }
 
-   
-    public function updateAdmin(int $id, array $data){
+    public function updateAdmin(int $id, array $data): Admin
+    {
         return DB::transaction(function () use ($id, $data) {
-            $admin = $this->admin->findOrFail($id);
+            $admin = $this->model->findOrFail($id);
 
             if (empty($data['password'])) {
                 unset($data['password']);
@@ -61,58 +50,19 @@ class AdminService
                 $data['password'] = Hash::make($data['password']);
             }
 
-            if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
-                if ($admin->image) {
-                    $this->mediaService->deleteImageVariants($admin->image);
-                }
 
-                $path = $this->mediaService->uploadImage($data['image'], 'admin-avatars');
-                $this->mediaService->dispatchImageProcessing($path);
-                $data['image'] = $path;
-            } elseif (array_key_exists('image', $data) && $data['image'] === null) {
-                if ($admin->image) {
-                    $this->mediaService->deleteImageVariants($admin->image);
-                }
-
-                $data['image'] = null;
-            } else {
-                unset($data['image']);
-            }
+            $this->handleImage($data, $admin, 'image');
 
             $admin->update($data);
-
             return $admin->fresh(['role']);
         });
     }
 
-    public function deleteAdmin(int $id): bool
-    {
-        $admin = $this->admin->findOrFail($id);
 
-        if ($admin->image) {
-            $this->mediaService->deleteImageVariants($admin->image);
+    protected function deleteAssociatedImages(Model $item): void
+    {
+        if ($item->image) {
+            $this->mediaService->deleteImageVariants($item->image);
         }
-
-        return $admin->delete();
-    }
-
- 
-    public function toggleStatus(int $id): bool
-    {
-        $admin = $this->admin->findOrFail($id);
-        $admin->status = !$admin->status;
-        $admin->save();
-
-        return $admin->status;
-    }
-
-  
-    public function updateOrderLevel(int $id, int $orderLevel): bool
-    {
-        $this->admin->findOrFail($id)->update([
-            'order_level' => $orderLevel,
-        ]);
-
-        return true;
     }
 }

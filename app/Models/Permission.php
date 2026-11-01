@@ -6,11 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
-
-#[Fillable([
-    'role_id',
-    'permissions',
-])]
+#[Fillable(['role_id', 'permissions'])]
 class Permission extends Model
 {
    

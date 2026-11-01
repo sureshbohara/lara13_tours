@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
@@ -15,11 +14,14 @@ use Illuminate\View\View;
 
 class CouponController extends BaseController
 {
-    public function __construct(protected CouponService $service){
+    public function __construct(protected CouponService $service)
+    {
         $this->middleware('auth:admin');
+        $this->middleware('can:coupon.read')->only(['index']);
+        $this->middleware('can:coupon.create')->only(['create', 'store']);
+        $this->middleware('can:coupon.update')->only(['edit', 'update', 'toggleStatus']);
+        $this->middleware('can:coupon.delete')->only('destroy');
     }
-
-
 
     public function index(Request $request): View
     {
@@ -55,7 +57,7 @@ class CouponController extends BaseController
 
     public function destroy(Coupon $coupon)
     {
-        $this->service->deleteCoupon($coupon->id);
+        $this->service->delete($coupon->id);
         return redirect()->back()->with('success', 'Coupon deleted successfully!');
     }
 
