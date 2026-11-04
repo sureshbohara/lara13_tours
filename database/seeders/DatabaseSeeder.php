@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             PackageSeeder::class,
             BlogSeeder::class,
             GallerySeeder::class,
+            EcommerceSeeder::class,
         ]);
 
         Schema::enableForeignKeyConstraints();

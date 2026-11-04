@@ -8,17 +8,338 @@ php artisan tinker --execute="\App\Models\Booking::truncate();"
 
 
 
-# 1. Laravel Breeze install
-composer require laravel/breeze --dev
-php artisan breeze:install react
 
-# 2. Node.js dependencies install
-npm install
+Q1. What are SOLID Principles?
+SOLID भनेको Software Design का पाँचवटा Principles हुन्।
 
-# 3. Additional packages
-npm install @inertiajs/react react react-dom
-npm install @heroicons/react lucide-react
-npm install swiper axios
+Why use?
+1. Code Clean बनाउन।
+2. Code Maintainable र Reusable बनाउन।
+3. Application Scalable बनाउन।
 
+Q2. What is Single Responsibility Principle (SRP)?
+एउटा Class को एउटै मात्र मुख्य जिम्मेवारी हुनुपर्छ।
+Example: UserController ले Request Handle गर्छ र EmailService ले Email पठाउँछ।
+
+Q3. What is Open/Closed Principle (OCP)?
+Software नयाँ सुविधा थप्न खुला हुनुपर्छ, तर पुरानो Code बारम्बार परिवर्तन गर्नुपर्ने हुनुहुँदैन।
+Example: Payment Interface बनाएर Stripe र eSewa का छुट्टाछुट्टै Classes बनाउन सकिन्छ।
+
+Q4. What is Liskov Substitution Principle (LSP)?
+Child Class लाई Parent Class (Base Class) को ठाउँमा प्रयोग गर्दा Application को व्यवहार बिग्रनु हुँदैन।
+
+Q5. What is Interface Segregation Principle (ISP)?
+एउटा ठूलो Interface बनाउनुभन्दा साना र आवश्यकताअनुसारका Interfaces बनाउनु राम्रो हुन्छ।
+
+Q6. What is Dependency Inversion Principle (DIP)?
+High-level Module ले Concrete Class मा सीधै निर्भर हुनुहुँदैन। Interface जस्ता Abstraction मा निर्भर हुनुपर्छ।
+
+Q7. DRY Principle : एउटै Code पटक-पटक लेख्नुको सट्टा Reusable Function वा Class बनाउनु हो।
+
+Q8. KISS Principle :  Code सकेसम्म सरल र बुझ्न सजिलो राख्नु हो।
+
+
+
+Q9. What is Refactoring : Code को बाहिरी Functionality नबिगारी भित्री Structure सुधार्ने प्रक्रियालाई Refactoring भनिन्छ।
+
+Benefits:
+1. Code Clean र Readable हुन्छ।
+2. Reuse र Maintenance सजिलो हुन्छ।
+
+
+
+Q10. How do you refactor a legacy Laravel codebase without breaking features?
+Steps:
+1. पहिले पुरानो Code बुझ्छु।
+2. PHPUnit वा Pest बाट Automated Tests लेख्छु।
+3. सानो-सानो भागमा Refactor गर्छु।
+4. SOLID Principles लागू गर्छु।
+5. प्रत्येक परिवर्तनपछि Tests चलाउँछु।
+
+
+
+Q11. What is Legacy Code : Old Code लाई Legacy Code भनिन्छ। यसमा Documentation वा Tests कम हुन सक्छन् र Maintenance गाह्रो हुन सक्छ।
+
+
+Q12. Clean Code : easy to read, understand, test, and maintain.
+
+
+Q14.  Service Container in Laravel?
+Service Container ले Classes का Dependencies व्यवस्थापन गर्छ र आवश्यक पर्दा Objects उपलब्ध गराउँछ।
+
+
+Q15.Dependency Injection?
+कुनै Class लाई चाहिने अर्को Class वा Object Constructor वा Method मार्फत बाहिरबाट उपलब्ध गराउनु Dependency Injection हो।
+
+
+Q17. Service Provider in Laravel : Services Register र Initialize गर्ने मुख्य ठाउँ हो।
+
+
+Q18.Facade in Laravel : Laravel Services प्रयोग गर्न Static-जस्तो सजिलो Interface दिन्छ।
+
+
+difference between 
+1. Controller: Request र Response व्यवस्थापन गर्छ।
+2. Service: Business Logic व्यवस्थापन गर्छ।
+3. Repository: Database Access Logic व्यवस्थापन गर्छ।
+4. Model: Database Table र Relationships सँग सम्बन्धित हुन्छ।
+5. View: User Interface देखाउँछ।
+
+
+
+Q20. Repository Pattern : Database Access Logic लाई Controller र Business Logic बाट अलग Layer मा राख्ने Pattern हो।
+
+
+Q21.Service Class in Laravel : Service Class ले Business Logic लाई Controller बाट अलग राख्छ।
+
+
+
+Q22. What is Eloquent ORM?
+Eloquent ORM प्रयोग गरेर PHP Models मार्फत SQL Query सिधै नलेखी Database मा Data Insert, Update, Delete र Fetch गर्न सकिन्छ।
+
+
+
+Q23. What is Polymorphic Relationship?
+एउटै Model ले फरक-फरक प्रकारका Models सँग सम्बन्ध राख्न सक्छ।
+Example: एउटै Comment Post वा Video दुवैसँग सम्बन्धित हुन सक्छ।
+
+
+
+Q25. What is Eager Loading?
+Related Data पहिले नै Load गरेर Database Queries को संख्या घटाउने तरिका हो।
+Example:
+$users = User::with('posts')->get();
+
+Benefit: N+1 Problem कम गर्छ र Performance सुधार गर्छ।
+
+
+
+Q26. What is Lazy Loading?
+Related Data आवश्यक परेको बेला मात्र Database बाट Load गर्ने प्रक्रिया हो।
+
+
+
+Q27. What is the N+1 Problem?
+पहिले Parent Records का लागि एउटा Query चल्छ र त्यसपछि प्रत्येक Record को Related Data का लागि छुट्टाछुट्टै Query चल्छ। यसले धेरै Queries बनाउँछ।
+Solution: Eager Loading प्रयोग गर्ने।
+
+
+
+Q28. What are Factories?
+Factory ले Testing र Development का लागि Fake Data Generate गर्छ।
+
+Q29. Database Transaction?
+धेरै Database Operations लाई एउटै Unit का रूपमा चलाउने प्रक्रिया हो।
+1. सबै सफल भए Commit हुन्छ।
+2. कुनै असफल भए Rollback हुन्छ।
+
+Q30. Database Indexing?
+Indexing ले Database मा Data खोज्ने काम छिटो बनाउँछ।
+
+Q31. What is Composite Index?
+एउटै Index मा दुई वा दुईभन्दा बढी Columns राखिएको Index लाई Composite Index भनिन्छ।
+
+
+Primary Key : Table को प्रत्येक Record लाई Unique रूपमा चिनाउँछ।
+Foreign Ke :  एउटा Table लाई अर्को Table सँग सम्बन्धित गराउँछ।
+INNER JOIN: दुवै Tables मा Match भएका Records मात्र ल्याउँछ।
+LEFT JOIN: Left Table का सबै Records र Right Table का Match भएका Records ल्याउँछ।
+
+
+
+ Gates: सामान्य Authorization Logic का लागि प्रयोग हुन्छन्।
+ Policies: कुनै निश्चित Model सम्बन्धी Authorization Rules का लागि प्रयोग हुन्छन्।
+ RBA : Role-Based Access Control
+ Sanctum: सामान्य SPA र Token-based Authentication का लागि उपयुक्त।
+ Passport: पूर्ण OAuth2 Authentication का लागि प्रयोग हुन्छ।
+
+
+1. WHERE: GROUP BY हुनुअघि Records Filter गर्छ।
+2. HAVING: GROUP BY पछि Grouped Results Filter गर्छ।
+3. DELETE: Table का Records हटाउँछ।
+4. TRUNCATE: Table का सबै Records हटाउँछ।
+5. DROP: Table को Structure सहित Table नै हटाउँछ।
+
+
+
+Q40. How do you secure a Laravel application?
+Steps:
+1. CSRF Protection।
+2. Input Validation
+3. Authentication and Authorization।
+4. Password Hashing and Encryption।
+5. Rate Limiting and HTTPS
+
+
+Q41.CSRF Protection : unauthorized cross-site request forgery attacks.
+
+
+Q42.XSS : Website मा Malicious JavaScript Inject गरिन्छ।
+
+
+Q47.Redis : एउटा In-memory Data Store हो।
+
+
+
+Q48. How do you protect sensitive legal data in Laravel?
+Steps:
+1. Data Encryption प्रयोग गर्छु।
+2. Strict RBAC र Laravel Policies लागू गर्छु।
+3. HTTPS प्रयोग गर्छु।
+4. Secure File Storage प्रयोग गर्छु।
+5. Audit Logs राख्छु।
+
+Q49. Rate Limiting : निश्चित समयमा User ले पठाउन पाउने Requests को संख्या सीमित गर्ने सुविधा हो।
+
+
+
+
+
+Q50.REST API?
+A REST API allows different applications to exchange data over HTTP using methods such as GET, POST, PUT, PATCH, and DELETE.
+
+Q51.API Resource in Laravel?
+Eloquent Model को Data लाई व्यवस्थित JSON Response मा परिवर्तन गर्छ।
+
+
+Q52.API Authentication in Laravel?
+API प्रयोग गर्ने User को Identity Verify गर्ने प्रक्रिया हो।
+
+Q53. How do you handle API errors?
+	1. Exception Handling प्रयोग गर्छु।
+	2. उपयुक्त HTTP Status Code पठाउँछु।
+	3. स्पष्ट Error Message दिन्छु।
+
+
+
+
+Q54. How do you integrate third-party APIs in Laravel?
+	1. Laravel HTTP Client प्रयोग गर्छु।
+	2. Authentication व्यवस्थापन गर्छु।
+	3. Timeout Set गर्छु।
+	4. Response Validate गर्छु।
+
+
+
+Q55. How do you optimize a slow MySQL query in Laravel?
+	Steps:
+	1. EXPLAIN बाट Query Execution Plan हेर्छु।
+	2. आवश्यक Database Index बनाउँछु।
+	3. Eager Loading प्रयोग गरेर N+1 हटाउँछु।
+	4. आवश्यक Columns मात्र Select गर्छु।
+	5. आवश्यकताअनुसार Caching र Pagination प्रयोग गर्छु।
+
+
+Q56. How do you improve Laravel application performance?
+	1. Eager Loading प्रयोग गर्छु।
+	2. Database Indexing गर्छु।
+	3. Redis Caching प्रयोग गर्छु।
+	4. Pagination प्रयोग गर्छु।
+	5. Optimized Queries लेख्छु।
+
+
+Q57. How do you handle large datasets?
+	1. Chunking प्रयोग गर्छु।
+	2. Lazy Collections प्रयोग गर्छु।
+	3. Database Indexing गर्छु।
+
+
+
+Q58. What is Queue in Laravel?
+   Queue ले Email पठाउने वा Report Generate गर्ने जस्ता समय लाग्ने काम Background मा Execute गर्छ।
+
+
+
+Q59. How do you debug Laravel applications?
+	1. Laravel Logs जाँच गर्छु।
+	2. Exception Messages जाँच गर्छु।
+	3. Database Query Logs जाँच गर्छु।
+
+Q60. What is Unit Testing?
+  Application का साना Functions वा Classes लाई छुट्टाछुट्टै Test गरेर सही काम गर्छन् कि गर्दैनन् जाँच गर्ने प्रक्रिया हो।
+
+Q61. What is PHPUnit?
+  PHPUnit PHP को Testing Framework हो।
+
+Q62. What is Pest?
+  Pest PHPUnit कै आधारमा बनेको सरल र Readable Testing Syntax भएको Framework हो।
+
+
+
+Q64. How do you handle a slow API response?
+ Steps:
+	1. Logs जाँच गर्छु।
+	2. Database Queries जाँच गर्छु।
+	3. N+1 Problem हटाउँछु।
+	4. आवश्यक Indexing गर्छु।
+	5. Caching र Queue Processing प्रयोग गर्छु।
+
+
+Q65. How do you design a scalable Laravel application?
+   Steps:
+	1. Modular Architecture प्रयोग गर्छु।
+	2. Reusable Services बनाउँछु।
+	3. Database Optimize गर्छु।
+	4. Caching र Queues प्रयोग गर्छु।
+	5. Proper API Design गर्छु।
+	6. Automated Testing राख्छु।
+
+
+Q66. How do you handle production errors?
+Steps:
+	1. Production Logs जाँच गर्छु।
+	2. Error को Root Cause पत्ता लगाउँछु।
+	3. सुरक्षित Fix तयार गर्छु।
+	4. Tests चलाउँछु।
+	5. व्यवस्थित तरिकाले Deploy गर्छु।
+
+
+Q67. How do you manage database changes in production?
+   Steps:
+	1. Version-controlled Migrations प्रयोग गर्छु।
+	2. Database Backup राख्छु।
+	3. Backward-compatible Schema Changes गर्छु।
+	4. Deployment पछि Verify गर्छु।
+
+
+Q68. How do you integrate a payment gateway?
+  Steps:
+	1. Payment Service बनाउँछु।
+	2. Gateway API Integrate गर्छु।
+	3. Webhook Signature Verify गर्छु।
+	4. Database Transactions प्रयोग गर्छु।
+	5. Payment Status सुरक्षित रूपमा Update गर्छु।
+
+
+
+
+
+Middleware: HTTP Request Controller सम्म पुग्नुअघि जाँच गर्ने Layer।
+Controller: Request र Response व्यवस्थापन गर्ने।
+Model: Database सँग सम्बन्धित।
+View: User Interface देखाउने।
+Service: Business Logic व्यवस्थापन गर्ने।
+Repository: Database Access Logic व्यवस्थापन गर्ने।
+Service Container: Dependencies व्यवस्थापन गर्ने।
+Dependency Injection: Dependencies बाहिरबाट उपलब्ध गराउने।
+Eloquent ORM: PHP Models मार्फत Database Access गर्ने।
+Factory: Fake Data Generate गर्ने।
+Database Transaction: धेरै Database Operations लाई एउटै Unit मा चलाउने।
+Database Indexing: Data खोज्ने काम छिटो बनाउने।
+Primary Key: Record लाई Unique रूपमा चिनाउने।
+Foreign Key: Tables बीच सम्बन्ध बनाउने।
+Eager Loading: Related Data पहिले Load गर्ने।
+Lazy Loading: आवश्यक पर्दा Related Data Load गर्ने।
+N+1 Problem: अनावश्यक Queries बढ्ने समस्या।
+Redis: In-memory Data Store।
+Gate: General Authorization।
+Policy: Model-based Authorization।
+Sanctum: SPA र Token-based Authentication।
+Passport: OAuth2 Authentication।
+CSRF: Cross-Site Request Forgery।
+XSS: Cross-Site Scripting।
+Queue: Background Processing।
+DRY: Don't Repeat Yourself।
+KISS: Keep It Simple, Stupid।
 
 

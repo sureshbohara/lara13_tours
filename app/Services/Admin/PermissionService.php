@@ -28,7 +28,13 @@ class PermissionService
         'blog',
         'media',
         'menu',
-
+        
+       // Ecom Management
+        'brand',
+        'product',
+        'product-attribute',
+        'offer',
+        
         // Marketing
         'subscriber',
         'coupon',

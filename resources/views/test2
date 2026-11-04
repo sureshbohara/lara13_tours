@@ -1,0 +1,81 @@
+Q1. React and why use it?
+  React एउटा JavaScript Library हो जसले UI बनाउन Virtual DOM प्रयोग गर्छ।
+  Benefits: Fast rendering, Component-based architecture, र Unidirectional data flow।
+
+Q2.Virtual DOM?
+  Real DOM को एउटा lightweight copy हो। State change हुँदा पहिले Virtual DOM मा update हुन्छ, त्यसपछि Diffing Algorithm ले Real DOM सँग compare गरेर मात्र आवश्यक भाग update गर्छ।
+
+Q3. State: Component भित्रै manage हुने र change गर्न मिल्ने (Mutable) data हो।
+
+Q4. Props: Parent बाट Child component मा pass हुने data हो, जसलाई Child ले change गर्न पाउँदैन (Immutable)
+
+Q5. What are Custom Hooks?
+   React को built-in hooks (जस्तै useState, useEffect) प्रयोग गरेर आफ्नै logic छुट्टाउनु हो।
+   Example: useFetch, useDebounce, useLocalStorage।
+   Benefit: DRY principle follow हुन्छ र logic reuse गर्न सजिलो हुन्छ।
+
+
+ Q6. Reusable Component Library
+    Isolated environment setup garne, Scalable architecture design garne, Monorepo or Bundle build tools run garne, ra distribution ko lagi NPM package provider 
+
+   Context API: Low-frequency updates (जस्तै: Theme, Auth User, Language) का लागि राम्रो।
+   Redux/Zustand: Complex, high-frequency state management र multiple components ले share गर्ने data का लागि। (Zustand अहिले lightweight र popular छ)
+
+
+   How do you optimize React Performance?
+     React.memo प्रयोग गरेर unnecessary re-renders रोक्छु।
+     useMemo र useCallback प्रयोग गर्छु।
+     Code Splitting: React.lazy र Suspense प्रयोग गर्छु।
+
+
+  What is React Error Boundary?
+    Component tree मा आउने JavaScript errors catch गरेर fallback UI देखाउने component हो। यसले पुरै App crash हुनबाट बचाउँछ।
+
+
+
+  React एउटा UI library हो, तर Next.js React माथि बनेको Framework हो जसले SSR, SSG, Routing, र SEO जस्ता features दिन्छ।
+
+  SSR (Server-Side Rendering): हरेक request मा server ले HTML generate गर्छ (Dynamic data को लागि)।
+  SSG (Static Site Generation): Build time मा HTML generate हुन्छ (Blog, Docs को लागि)।
+  CSR (Client-Side Rendering): Standard React जस्तै browser मा नै render हुन्छ।
+
+
+
+  How do you handle API calls and caching in React?
+  Axios वा Fetch भन्दा पनि React Query (TanStack Query) वा SWR प्रयोग गर्छु।
+Benefits: Automatic caching, background refetching, loading/error states सजिलै manage हुन्छ।
+
+
+
+How to build a Dashboard with large Legal Data?
+ Backend बाट Pagination वा Cursor-based pagination मा data ल्याउँछु।
+Frontend मा Virtual Scrolling (react-window) प्रयोग गर्छु।
+Data Table को लागि TanStack Table (headless UI) प्रयोग गर्छु।
+Charts को लागि Recharts वा Chart.js integrate गर्छु।
+
+
+ How to handle API Errors gracefully?
+ Axios Interceptors प्रयोग गरेर global error catch गर्छु।
+UI मा Toast notifications (react-hot-toast) देखाउँछु।
+Form errors को लागि inline validation देखाउँछु।
+
+
+
+How to secure sensitive data in React Frontend?
+
+JWT/Token कहिल्यै localStorage मा राख्दिनँ, HttpOnly Cookie मा राख्छु।
+User input लाई sanitize गर्छु (XSS रोक्न)।
+dangerouslySetInnerHTML प्रयोग गर्दिनँ।
+Sensitive legal data browser cache मा store हुन दिन्नँ।
+
+
+
+How do you apply SOLID principles in React?
+SRP: एउटा Component/Custom Hook ले एउटै मात्र काम गर्नुपर्छ।
+OCP: Component लाई Props मार्फत extend गर्न मिल्ने बनाउनुपर्छ, भित्री code नबिगारी।
+
+
+
+ What is Refactoring in Frontend?
+ पुरानो, messy code लाई Clean Code मा लैजानु।
+Example: Class components लाई Functional components + Hooks मा convert गर्ने, prop drilling हटाएर Context/Composition प्रयोग गर्ने।
